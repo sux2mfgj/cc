@@ -131,12 +131,24 @@ token_t* lexical_analyze(parse_context_t* context)
     return NULL;
 }
 
+
+void readline(char* buffer)
+{
+    char* result = fgets(buffer, 81, stdin);
+    if(!result)
+    {
+        errx(1, "failed to read from stdin");
+    }
+}
+
+
 int main(int argc, char** argv)
 {
-    char* input = "0";
+    char buffer[81] = {0};
+    readline(buffer);
 
     parse_context_t context = {
-        .text = input,
+        .text = buffer,
     };
 
     token_t* cur_token;
