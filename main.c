@@ -28,10 +28,7 @@ typedef struct {
     };
 } token_number_t;
 
-typedef enum {
-    OP_PLUS,
-    OP_MINUS
-} operator_type_t;
+typedef enum { OP_PLUS, OP_MINUS } operator_type_t;
 
 typedef struct {
     token_t base;
@@ -100,9 +97,9 @@ token_t* lexical_analyze(parse_context_t* context)
         return (token_t*)number_token;
     }
 
-    if(*context->text == '+')
-    {
-        token_opr_t *opr_token = calloc(1, sizeof (token_opr_t));
+    if (*context->text == '+') {
+        context->text++;
+        token_opr_t* opr_token = calloc(1, sizeof(token_opr_t));
         opr_token->base.next = NULL;
         opr_token->base.type = TK_OPR;
         opr_token->type = OP_PLUS;
@@ -110,9 +107,9 @@ token_t* lexical_analyze(parse_context_t* context)
         return (token_t*)opr_token;
     }
 
-    if(*context->text == '-')
-    {
-        token_opr_t *opr_token = calloc(1, sizeof (token_opr_t));
+    if (*context->text == '-') {
+        context->text++;
+        token_opr_t* opr_token = calloc(1, sizeof(token_opr_t));
         opr_token->base.next = NULL;
         opr_token->base.type = TK_OPR;
         opr_token->type = OP_MINUS;
@@ -131,16 +128,13 @@ token_t* lexical_analyze(parse_context_t* context)
     return NULL;
 }
 
-
 void readline(char* buffer)
 {
     char* result = fgets(buffer, 81, stdin);
-    if(!result)
-    {
+    if (!result) {
         errx(1, "failed to read from stdin");
     }
 }
-
 
 int main(int argc, char** argv)
 {
@@ -178,17 +172,14 @@ main:\n";
     printf("%s", output_base_head);
 
     uint64_t result;
-    if(!token_head)
-    {
+    if (!token_head) {
         result = 0;
     }
-    else
-    {
-        if(token_head->type != TK_NUM)
-        {
+    else {
+        if (token_head->type != TK_NUM) {
             errx(1, "invalid operator found");
         }
-        token_number_t *result_token = (token_number_t*)token_head;
+        token_number_t* result_token = (token_number_t*)token_head;
         result = result_token->uint64;
     }
 
