@@ -12,8 +12,4 @@ $(bin): $(obj)
 clean:
 	rm -rf $(obj) $(bin) *.s a.out
 
-test: $(bin)
-	./$(bin) > test.s
-	$(CC) test.s
-	./a.out
-
+include  test.mk
