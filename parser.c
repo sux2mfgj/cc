@@ -28,27 +28,24 @@ node_t* parse(parse_context_t* ctx)
 {
     token_t* token = get_next_token(ctx);
 
-    switch (token->type) {
-        // case TK_OPR: {
-        //    return parse_op(ctx, (token_opr_t*)token);
-        //}
-        case TK_NUM: {
-            node_t* n1 = parse_val(ctx, (token_number_t*)token);
-            token_t* t2 = get_next_token(ctx);
-            if (t2->type == TK_EOF) {
-                return n1;
-            }
-
-            if (t2->type == TK_OPR) {
-                return parse_op(ctx, n1, (token_opr_t*)t2);
-            }
-
-            NOT_YET_IMPLEMETED;
+    if (token->type == TK_NUM) {
+        node_t* n1 = parse_val(ctx, (token_number_t*)token);
+        token_t* t2 = get_next_token(ctx);
+        if (t2->type == TK_EOF) {
+            return n1;
         }
-        case TK_EOF: {
-            return NULL;
+
+        if (t2->type == TK_OPR) {
+            return parse_op(ctx, n1, (token_opr_t*)t2);
         }
+
+        NOT_YET_IMPLEMETED;
     }
 
+    if (token->type == TK_EOF) {
+        return NULL;
+    }
+
+    NOT_YET_IMPLEMETED;
     return NULL;
 }
