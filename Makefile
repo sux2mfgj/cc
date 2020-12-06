@@ -1,7 +1,7 @@
 CC	:= cc
 CFLAGS	:= -Wall -ggdb3
 
-src	:= main.c
+src	:= main.c lexer.c parser.c ir.c
 obj	:= $(src:.c=.o)
 bin	:= uopcc
 
