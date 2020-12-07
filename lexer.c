@@ -80,6 +80,26 @@ token_t* get_next_token(parse_context_t* context)
         return (token_t*)opr_token;
     }
 
+    if (*context->text == '*') {
+        context->text++;
+        token_opr_t* opr_token = calloc(1, sizeof(token_opr_t));
+        opr_token->base.next = NULL;
+        opr_token->base.type = TK_OPR;
+        opr_token->type = OP_MUL;
+
+        return (token_t*)opr_token;
+    }
+
+    if (*context->text == '/') {
+        context->text++;
+        token_opr_t* opr_token = calloc(1, sizeof(token_opr_t));
+        opr_token->base.next = NULL;
+        opr_token->base.type = TK_OPR;
+        opr_token->type = OP_DIV;
+
+        return (token_t*)opr_token;
+    }
+
     // reach to end of line
     if (*context->text == 0) {
         token_t* eof_token = calloc(1, sizeof(token_t));

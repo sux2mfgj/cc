@@ -40,6 +40,14 @@ static void put_op(node_op_t* node, FILE* stream)
             fputs(" - ", stream);
             break;
         }
+        case OP_MUL: {
+            fputs(" * ", stream);
+            break;
+        }
+        case OP_DIV: {
+            fputs(" / ", stream);
+            break;
+        }
     }
 }
 
