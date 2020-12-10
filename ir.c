@@ -65,21 +65,23 @@ static ir_t* _gen_ir(node_t* node, FILE* stream)
             ir_t* ir = calloc(1, sizeof(ir_t));
             ir->type = IR_VAL;
             ir->val = node_val->token->uint64;
-            put_ir(ir, stream);
             return ir;
         }
         case NODE_OP: {
             node_op_t* node_op = (node_op_t*)node;
+            ir_t* left = _gen_ir(node_op->left, stream);
+            ir_t* right = _gen_ir(node_op->right, stream);
 
             ir_t* ir_result = calloc(1, sizeof(ir_t));
             ir_result->type = IR_VAR;
             ir_result->var_index = var_index++;
-            put_ir(ir_result, stream);
 
+            put_ir(ir_result, stream);
             fputs(" = ", stream);
-            ir_t* left = _gen_ir(node_op->left, stream);
+            put_ir(left, stream);
             put_op(node_op, stream);
-            ir_t* right = _gen_ir(node_op->right, stream);
+            put_ir(right, stream);
+            fprintf(stream, "\n");
             return ir_result;
         }
     }
@@ -92,6 +94,5 @@ void gen_ir(node_t* node, FILE* stream)
     var_index = 0;
     while (_gen_ir(node, stream)) {
         node = node->next;
-        fprintf(stream, "\n");
     }
 }
