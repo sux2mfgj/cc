@@ -80,8 +80,6 @@ static ir_t* _gen_ir(node_t* node, FILE* stream)
             ir_t* left = _gen_ir(node_op->left, stream);
             put_op(node_op, stream);
             ir_t* right = _gen_ir(node_op->right, stream);
-
-            fprintf(stream, "\n");
             return ir_result;
         }
     }
@@ -94,6 +92,6 @@ void gen_ir(node_t* node, FILE* stream)
     var_index = 0;
     while (_gen_ir(node, stream)) {
         node = node->next;
+        fprintf(stream, "\n");
     }
-    fprintf(stream, "\n");
 }
