@@ -65,7 +65,6 @@ static token_t* _get_next_token(parse_context_t* context, bool step)
         }
 
         token_number_t* number_token = calloc(1, sizeof(token_number_t));
-        number_token->base.next = NULL;
         number_token->base.type = TK_NUM;
         number_token->uint64 = value;
 
@@ -76,7 +75,6 @@ static token_t* _get_next_token(parse_context_t* context, bool step)
     if (*context->text == '+') {
         context->text++;
         token_opr_t* opr_token = calloc(1, sizeof(token_opr_t));
-        opr_token->base.next = NULL;
         opr_token->base.type = TK_OPR;
         opr_token->type = OP_PLUS;
 
@@ -87,7 +85,6 @@ static token_t* _get_next_token(parse_context_t* context, bool step)
     if (*context->text == '-') {
         context->text++;
         token_opr_t* opr_token = calloc(1, sizeof(token_opr_t));
-        opr_token->base.next = NULL;
         opr_token->base.type = TK_OPR;
         opr_token->type = OP_MINUS;
 
@@ -98,7 +95,6 @@ static token_t* _get_next_token(parse_context_t* context, bool step)
     if (*context->text == '*') {
         context->text++;
         token_opr_t* opr_token = calloc(1, sizeof(token_opr_t));
-        opr_token->base.next = NULL;
         opr_token->base.type = TK_OPR;
         opr_token->type = OP_MUL;
 
@@ -109,7 +105,6 @@ static token_t* _get_next_token(parse_context_t* context, bool step)
     if (*context->text == '/') {
         context->text++;
         token_opr_t* opr_token = calloc(1, sizeof(token_opr_t));
-        opr_token->base.next = NULL;
         opr_token->base.type = TK_OPR;
         opr_token->type = OP_DIV;
 
@@ -120,7 +115,6 @@ static token_t* _get_next_token(parse_context_t* context, bool step)
     if (*context->text == ';') {
         context->text++;
         token_t* token = calloc(1, sizeof(token_t));
-        token->next = NULL;
         token->type = TK_SEM;
 
         ret = (token_t*)token;
@@ -130,7 +124,6 @@ static token_t* _get_next_token(parse_context_t* context, bool step)
     // reach to end of line
     if (*context->text == 0) {
         token_t* eof_token = calloc(1, sizeof(token_t));
-        eof_token->next = NULL;
         eof_token->type = TK_EOF;
         ret = (token_t*)eof_token;
         goto found;

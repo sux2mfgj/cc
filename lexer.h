@@ -10,7 +10,6 @@ typedef enum {
 } token_type_t;
 
 typedef struct _token_base {
-    struct _token_base* next;
     token_type_t type;
     char* word;
 } token_t;
