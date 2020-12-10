@@ -8,7 +8,10 @@ static token_t sem_token = {
     .type = TK_SEM,
 };
 
-Ensure(null)
+#define LEXER_TEST(name) Ensure(lexer_##name)
+#define LEXER_ADDTEST(name) add_test(suite, lexer_##name)
+
+LEXER_TEST(null)
 {
     parse_context_t context = {
         .text = "",
@@ -18,7 +21,7 @@ Ensure(null)
                 is_equal_to_contents_of(&eof_token, sizeof eof_token));
 }
 
-Ensure(sem_null)
+LEXER_TEST(sem_null)
 {
     parse_context_t context = {
         .text = ";",
@@ -30,7 +33,7 @@ Ensure(sem_null)
                 is_equal_to_contents_of(&eof_token, sizeof eof_token));
 }
 
-Ensure(number_0)
+LEXER_TEST(number_0)
 {
     parse_context_t context = {
         .text = "12;",
@@ -52,7 +55,7 @@ Ensure(number_0)
                 is_equal_to_contents_of(&eof_token, sizeof eof_token));
 }
 
-Ensure(op_0)
+LEXER_TEST(op_0)
 {
     parse_context_t context = {
         .text = "1 + 1;",
@@ -90,10 +93,10 @@ TestSuite* lexer_tests()
 {
     TestSuite* suite = create_test_suite();
 
-    add_test(suite, null);
-    add_test(suite, sem_null);
-    add_test(suite, number_0);
-    add_test(suite, op_0);
+    LEXER_ADDTEST(null);
+    LEXER_ADDTEST(sem_null);
+    LEXER_ADDTEST(number_0);
+    LEXER_ADDTEST(op_0);
 
     return suite;
 }
