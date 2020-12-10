@@ -3,8 +3,9 @@
 #include <stdint.h>
 
 typedef enum {
-    TK_OPR,
-    TK_NUM,
+    TK_OPR, // +, -, *, /
+    TK_NUM, // 1 ~ 9
+    TK_SEM, // ;
     TK_EOF,
 } token_type_t;
 

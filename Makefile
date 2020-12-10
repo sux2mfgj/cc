@@ -12,4 +12,3 @@ $(bin): $(obj)
 clean:
 	rm -rf $(obj) $(bin) *.s a.out
 
-include  test.mk

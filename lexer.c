@@ -14,17 +14,21 @@ static void skip_separators(parse_context_t* context)
     }
 }
 
+static bool is_number(parse_context_t* ctx)
+{
+    return '0' <= *ctx->text && *ctx->text <= '9';
+}
+
 bool parse_value(parse_context_t* context, uint64_t* result, char** word)
 {
     char* start = context->text;
 
     int len = 0;
     // decimal
-    while (*context->text != ' ' && *context->text != '\n' &&
-           *context->text != '\t' && *context->text) {
+    do {
         len++;
         context->text++;
-    }
+    } while (is_number(context));
 
     *word = calloc(1, len);
     memcpy(*word, start, len);
@@ -40,12 +44,20 @@ bool parse_value(parse_context_t* context, uint64_t* result, char** word)
     return true;
 }
 
-token_t* get_next_token(parse_context_t* context)
+static token_t* next;
+
+static token_t* _get_next_token(parse_context_t* context, bool step)
 {
     skip_separators(context);
 
+    token_t* ret = NULL;
+    if (next) {
+        ret = next;
+        goto found;
+    }
+
     // parse number
-    if ('0' <= *context->text && *context->text <= '9') {
+    if (is_number(context)) {
         uint64_t value;
         char* word;
         if (!parse_value(context, &value, &word)) {
@@ -57,7 +69,8 @@ token_t* get_next_token(parse_context_t* context)
         number_token->base.type = TK_NUM;
         number_token->uint64 = value;
 
-        return (token_t*)number_token;
+        ret = (token_t*)number_token;
+        goto found;
     }
 
     if (*context->text == '+') {
@@ -67,7 +80,8 @@ token_t* get_next_token(parse_context_t* context)
         opr_token->base.type = TK_OPR;
         opr_token->type = OP_PLUS;
 
-        return (token_t*)opr_token;
+        ret = (token_t*)opr_token;
+        goto found;
     }
 
     if (*context->text == '-') {
@@ -77,7 +91,8 @@ token_t* get_next_token(parse_context_t* context)
         opr_token->base.type = TK_OPR;
         opr_token->type = OP_MINUS;
 
-        return (token_t*)opr_token;
+        ret = (token_t*)opr_token;
+        goto found;
     }
 
     if (*context->text == '*') {
@@ -87,7 +102,8 @@ token_t* get_next_token(parse_context_t* context)
         opr_token->base.type = TK_OPR;
         opr_token->type = OP_MUL;
 
-        return (token_t*)opr_token;
+        ret = (token_t*)opr_token;
+        goto found;
     }
 
     if (*context->text == '/') {
@@ -97,7 +113,18 @@ token_t* get_next_token(parse_context_t* context)
         opr_token->base.type = TK_OPR;
         opr_token->type = OP_DIV;
 
-        return (token_t*)opr_token;
+        ret = (token_t*)opr_token;
+        goto found;
+    }
+
+    if (*context->text == ';') {
+        context->text++;
+        token_t* token = calloc(1, sizeof(token_t));
+        token->next = NULL;
+        token->type = TK_SEM;
+
+        ret = (token_t*)token;
+        goto found;
     }
 
     // reach to end of line
@@ -105,9 +132,25 @@ token_t* get_next_token(parse_context_t* context)
         token_t* eof_token = calloc(1, sizeof(token_t));
         eof_token->next = NULL;
         eof_token->type = TK_EOF;
-        return eof_token;
+        ret = (token_t*)eof_token;
+        goto found;
     }
 
     NOT_YET_IMPLEMETED;
     return NULL;
+
+found:
+    next = step ? NULL : ret;
+
+    return ret;
+}
+
+token_t* get_next_token(parse_context_t* context)
+{
+    return _get_next_token(context, true);
+}
+
+token_t* front_token(parse_context_t* context)
+{
+    return _get_next_token(context, false);
 }

@@ -1,21 +1,26 @@
 #include "parser.h"
+#include <assert.h>
+#include <stdbool.h>
 #include <stddef.h>
 #include <stdlib.h>
 #include "lexer.h"
 #include "util.h"
 
-static node_t* parse_op(parse_context_t* ctx, node_t* left, token_opr_t* token)
+static node_t* parse_op(parse_context_t* ctx,
+                        node_t* left,
+                        token_opr_t* op_token)
 {
     node_op_t* node = calloc(1, sizeof(node_op_t));
     node->base.type = NODE_OP;
-    node->token = token;
+    node->token = op_token;
     node->left = left;
     node->right = parse(ctx);
+    assert(node->right && "detect invalid token (EOF)");
 
     return (node_t*)node;
 }
 
-static node_t* parse_val(parse_context_t* ctx, token_number_t* token)
+static node_t* parse_val(token_number_t* token)
 {
     node_val_t* node = calloc(1, sizeof(node_op_t));
     node->base.type = NODE_VAL;
@@ -24,28 +29,42 @@ static node_t* parse_val(parse_context_t* ctx, token_number_t* token)
     return (node_t*)node;
 }
 
-node_t* parse(parse_context_t* ctx)
+static node_t* _parse(parse_context_t* ctx, node_t* node)
 {
-    token_t* token = get_next_token(ctx);
+    token_t* t1 = get_next_token(ctx);
 
-    if (token->type == TK_NUM) {
-        node_t* n1 = parse_val(ctx, (token_number_t*)token);
-        token_t* t2 = get_next_token(ctx);
-        if (t2->type == TK_EOF) {
-            return n1;
-        }
+    if (t1->type == TK_SEM) {
+        return node;
+    }
 
-        if (t2->type == TK_OPR) {
-            return parse_op(ctx, n1, (token_opr_t*)t2);
+    if (t1->type == TK_NUM) {
+        return parse_val((token_number_t*)t1);
+    }
+
+    if (t1->type == TK_EOF)
+    {
+        return NULL;
+    }
+
+    if (node) {
+        if (t1->type == TK_OPR) {
+            return parse_op(ctx, node, (token_opr_t*)t1);
         }
 
         NOT_YET_IMPLEMETED;
     }
 
-    if (token->type == TK_EOF) {
-        return NULL;
-    }
-
     NOT_YET_IMPLEMETED;
-    return NULL;
+}
+
+node_t* parse(parse_context_t* ctx)
+{
+    node_t* node = NULL;
+    while (true) {
+        node_t* pre = node;
+        node = _parse(ctx, node);
+        if (pre == node) {
+            return node;
+        }
+    }
 }
