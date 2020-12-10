@@ -19,7 +19,7 @@ static bool is_number(parse_context_t* ctx)
     return '0' <= *ctx->text && *ctx->text <= '9';
 }
 
-bool parse_value(parse_context_t* context, uint64_t* result, char** word)
+static bool parse_value(parse_context_t* context, uint64_t* result, char** word)
 {
     char* start = context->text;
 
