@@ -13,7 +13,7 @@ $(bin): $(obj)
 clean:
 	rm -rf $(obj) $(bin) *.s a.out
 
-test: all_tests.c lexer_test.c $(module)
+test: all_tests.c lexer_test.c parser_test.c $(module)
 	$(CC) $^ -lcgreen -o $@
 	./$@
 
