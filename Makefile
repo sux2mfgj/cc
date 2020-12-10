@@ -1,7 +1,8 @@
 CC	:= cc
 CFLAGS	:= -Wall -ggdb3
 
-src	:= main.c lexer.c parser.c ir.c
+module	:= lexer.c parser.c ir.c
+src	:= main.c $(module)
 obj	:= $(src:.c=.o)
 bin	:= uopcc
 
@@ -11,4 +12,8 @@ $(bin): $(obj)
 
 clean:
 	rm -rf $(obj) $(bin) *.s a.out
+
+test: all_tests.c lexer_test.c $(module)
+	$(CC) $^ -lcgreen -o $@
+	./$@
 
