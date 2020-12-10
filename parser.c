@@ -43,7 +43,7 @@ static node_t* _parse(parse_context_t* ctx, node_t* node)
 
     if (t1->type == TK_EOF)
     {
-        return NULL;
+        return node;
     }
 
     if (node) {
