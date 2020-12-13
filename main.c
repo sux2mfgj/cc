@@ -17,35 +17,6 @@ void readline(char* buffer)
     }
 }
 
-/*
-static void gen_asm(void)
-{
-    const char* output_base_head =
-        "\
-.globl main\n\
-.text\n\
-main:\n";
-    const char* output_base_end = "ret\n";
-
-    printf("%s", output_base_head);
-
-    uint64_t result;
-    if (!node_head) {
-        result = 0;
-    }
-    else {
-        if (token_head->type != TK_NUM) {
-            errx(1, "invalid operator found");
-        }
-        token_number_t* result_token = (token_number_t*)token_head;
-        result = result_token->uint64;
-    }
-
-    printf("mov $%ld, %%rax\n", result);
-    printf("%s", output_base_end);
-}
-*/
-
 int main(int argc, char** argv)
 {
     char buffer[81] = {0};
@@ -64,6 +35,4 @@ int main(int argc, char** argv)
     }
 
     gen_ir(node_head, stdout);
-
-    // gen_asm();
 }
