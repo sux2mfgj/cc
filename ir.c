@@ -84,6 +84,8 @@ static ir_t* _gen_ir(node_t* node, FILE* stream)
             fprintf(stream, "\n");
             return ir_result;
         }
+        case NODE_EOF:
+            break;
     }
 
     return NULL;
