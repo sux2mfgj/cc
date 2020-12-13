@@ -1,7 +1,7 @@
 CC	:= cc
 CFLAGS	:= -Wall -ggdb3
 
-module	:= lexer.c parser.c ir.c
+module	:= lexer.c parser.c ir.c debug.c
 src	:= main.c $(module)
 obj	:= $(src:.c=.o)
 bin	:= uopcc
