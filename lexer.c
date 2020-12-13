@@ -150,8 +150,3 @@ token_t* get_next_token(parse_context_t* context)
 {
     return _get_next_token(context, true);
 }
-
-token_t* front_token(parse_context_t* context)
-{
-    return _get_next_token(context, false);
-}
