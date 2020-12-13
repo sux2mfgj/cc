@@ -29,7 +29,7 @@ int main(int argc, char** argv)
     debug_enable();
 
     node_t* node = node_head = parse(&context);
-    while (node) {
+    while (node && node->type != NODE_EOF) {
         node->next = parse(&context);
         node = node->next;
     }

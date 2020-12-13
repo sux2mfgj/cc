@@ -5,6 +5,7 @@
 typedef enum {
     NODE_OP,
     NODE_VAL,
+    NODE_EOF,
 } node_type_t;
 
 typedef struct _node_t {
