@@ -5,6 +5,7 @@
 #include "ir.h"
 #include "lexer.h"
 #include "parser.h"
+#include "debug.h"
 
 node_t* node_head;
 
@@ -53,6 +54,8 @@ int main(int argc, char** argv)
     parse_context_t context = {
         .text = buffer,
     };
+
+    debug_enable();
 
     node_t* node = node_head = parse(&context);
     while (node) {

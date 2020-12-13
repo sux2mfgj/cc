@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "util.h"
+#include "debug.h"
 
 static void skip_separators(parse_context_t* context)
 {
@@ -69,6 +70,7 @@ static token_t* _get_next_token(parse_context_t* context, bool step)
         number_token->uint64 = value;
 
         ret = (token_t*)number_token;
+        debug ("token [number] %d\n", value);
         goto found;
     }
 
@@ -79,6 +81,7 @@ static token_t* _get_next_token(parse_context_t* context, bool step)
         opr_token->type = OP_PLUS;
 
         ret = (token_t*)opr_token;
+        debug ("token [op] +\n");
         goto found;
     }
 
@@ -89,6 +92,7 @@ static token_t* _get_next_token(parse_context_t* context, bool step)
         opr_token->type = OP_MINUS;
 
         ret = (token_t*)opr_token;
+        debug ("token [op] -\n");
         goto found;
     }
 
@@ -99,6 +103,7 @@ static token_t* _get_next_token(parse_context_t* context, bool step)
         opr_token->type = OP_MUL;
 
         ret = (token_t*)opr_token;
+        debug ("token [op] *\n");
         goto found;
     }
 
@@ -109,6 +114,7 @@ static token_t* _get_next_token(parse_context_t* context, bool step)
         opr_token->type = OP_DIV;
 
         ret = (token_t*)opr_token;
+        debug ("token [op] /\n");
         goto found;
     }
 
@@ -118,6 +124,7 @@ static token_t* _get_next_token(parse_context_t* context, bool step)
         token->type = TK_SEM;
 
         ret = (token_t*)token;
+        debug ("token [op] ;\n");
         goto found;
     }
 
@@ -126,6 +133,7 @@ static token_t* _get_next_token(parse_context_t* context, bool step)
         token_t* eof_token = calloc(1, sizeof(token_t));
         eof_token->type = TK_EOF;
         ret = (token_t*)eof_token;
+        debug ("token [op] <EOF>\n");
         goto found;
     }
 
