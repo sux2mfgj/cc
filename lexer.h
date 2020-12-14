@@ -6,6 +6,8 @@ typedef enum {
     TK_OPR, // +, -, *, /
     TK_NUM, // 1 ~ 9
     TK_SEM, // ;
+    TK_L_PAR, //{
+    TK_R_PAR, // }
     TK_EOF,
 } token_type_t;
 

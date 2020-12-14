@@ -45,17 +45,11 @@ static bool parse_value(parse_context_t* context, uint64_t* result, char** word)
     return true;
 }
 
-static token_t* next;
-
-static token_t* _get_next_token(parse_context_t* context, bool step)
+token_t* get_next_token(parse_context_t* context)
 {
     skip_separators(context);
 
     token_t* ret = NULL;
-    if (next) {
-        ret = next;
-        goto found;
-    }
 
     // parse number
     if (is_number(context)) {
@@ -128,6 +122,26 @@ static token_t* _get_next_token(parse_context_t* context, bool step)
         goto found;
     }
 
+    if (*context->text == '{') {
+        context->text++;
+        token_t* token = calloc (1, sizeof(token_t));
+        token->type = TK_L_PAR;
+
+        ret = (token_t*)token;
+        debug ("token [left parenth] {\n");
+        goto found;
+    }
+
+    if (*context->text == '}') {
+        context->text++;
+        token_t* token = calloc (1, sizeof(token_t));
+        token->type = TK_R_PAR;
+
+        ret = (token_t*)token;
+        debug ("token [left parenth] }\n");
+        goto found;
+    }
+
     // reach to end of line
     if (*context->text == 0) {
         token_t* eof_token = calloc(1, sizeof(token_t));
@@ -141,12 +155,6 @@ static token_t* _get_next_token(parse_context_t* context, bool step)
     return NULL;
 
 found:
-    next = step ? NULL : ret;
-
     return ret;
 }
 
-token_t* get_next_token(parse_context_t* context)
-{
-    return _get_next_token(context, true);
-}

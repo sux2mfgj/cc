@@ -7,6 +7,12 @@ static token_t eof_token = {
 static token_t sem_token = {
     .type = TK_SEM,
 };
+static token_t l_t = {
+    .type = TK_L_PAR,
+};
+static token_t r_t = {
+    .type = TK_R_PAR,
+};
 
 #define LEXER_TEST(name) Ensure(lexer_##name)
 #define LEXER_ADDTEST(name) add_test(suite, lexer_##name)
@@ -89,6 +95,18 @@ LEXER_TEST(op_0)
                 is_equal_to_contents_of(&eof_token, sizeof eof_token));
 }
 
+LEXER_TEST(parentheses_0)
+{
+    parse_context_t context = {
+        .text = "{}",
+    };
+
+
+
+    assert_that(get_next_token(&context), is_equal_to_contents_of(&l_t, sizeof l_t));
+    assert_that(get_next_token(&context), is_equal_to_contents_of(&r_t, sizeof r_t));
+}
+
 TestSuite* lexer_tests()
 {
     TestSuite* suite = create_test_suite();
@@ -97,6 +115,7 @@ TestSuite* lexer_tests()
     LEXER_ADDTEST(sem_null);
     LEXER_ADDTEST(number_0);
     LEXER_ADDTEST(op_0);
+    LEXER_ADDTEST(parentheses_0);
 
     return suite;
 }
