@@ -4,8 +4,6 @@
 #define PARSER_TEST(name) Ensure(parser_##name)
 #define PARSER_ADDTEST(name) add_test(suite, parser_##name)
 
-
-
 PARSER_TEST(null)
 {
     parse_context_t context = {
@@ -138,6 +136,21 @@ PARSER_TEST(op_2)
     assert_that(right_op->token, is_equal_to_contents_of(&div_op, sizeof div_op));
 }
 
+PARSER_TEST(parentheses_0)
+{
+    parse_context_t context = {
+        .text = "{}",
+    };
+
+    node_t* n1 = parse(&context);
+    assert_that (n1, is_non_null);
+    assert_that (n1->type, is_equal_to(NODE_PAR));
+
+    node_par_t* np = (node_par_t*)n1;
+    assert_that (np->contents, is_null);
+    assert_that (parse(&context), is_equal_to_contents_of(&eof_node, sizeof eof_node));
+}
+
 TestSuite* parser_tests(void)
 {
     TestSuite* suite = create_test_suite();
@@ -148,6 +161,7 @@ TestSuite* parser_tests(void)
     PARSER_ADDTEST(op_0);
     PARSER_ADDTEST(op_1);
     PARSER_ADDTEST(op_2);
+    PARSER_ADDTEST(parentheses_0);
 
     return suite;
 }

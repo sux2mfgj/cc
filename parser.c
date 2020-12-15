@@ -37,6 +37,37 @@ static node_t* parse_op(parse_context_t* ctx,
     return (node_t*)node;
 }
 
+static node_t* parse_parenthe(parse_context_t* ctx)
+{
+    node_par_t *node = calloc(1, sizeof(node_op_t));
+    node->base.type = NODE_PAR;
+    node->base.next = NULL;
+
+    node_t *prev = NULL;
+
+    while(true)
+    {
+        node_t* content = parse(ctx);
+        if(content->type == NODE_R_PAR)
+        {
+            break;
+        }
+
+        if(!prev)
+        {
+            prev = content;
+        }
+        else
+        {
+            prev->next = content;
+            prev = prev->next;
+        }
+    }
+    node->contents = prev;
+
+    return (node_t*)node;
+}
+
 static node_t* parse_val(token_number_t* token)
 {
     node_val_t* node = calloc(1, sizeof(node_op_t));
@@ -56,6 +87,15 @@ static node_t* parse_eof(token_t* token)
     return node;
 }
 
+static node_t* parse_r_par(void)
+{
+    node_t* node = calloc(1, sizeof(node_t));
+    node->type = NODE_R_PAR;
+    node->next = NULL;
+
+    return node;
+}
+
 static node_t* _parse(parse_context_t* ctx, node_t* node)
 {
     token_t* t1 = get_next_token(ctx);
@@ -68,6 +108,10 @@ static node_t* _parse(parse_context_t* ctx, node_t* node)
         return parse_eof(t1);
     }
 
+    if (t1->type == TK_R_PAR) {
+        return parse_r_par();
+    }
+
     node_t* n1;
 
     if (t1->type == TK_NUM) {
@@ -76,6 +120,12 @@ static node_t* _parse(parse_context_t* ctx, node_t* node)
     else if (t1->type == TK_OPR) {
         assert(node && "wtf");
         return parse_op(ctx, node, (token_opr_t*)t1);
+    }
+    else if (t1->type == TK_L_PAR) {
+        return parse_parenthe(ctx);
+    }
+    else if (t1->type == TK_R_PAR) {
+        return parse_r_par();
     }
     else {
         NOT_YET_IMPLEMETED;
