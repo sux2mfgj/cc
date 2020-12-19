@@ -1,4 +1,6 @@
 #include "ir.h"
+#include <assert.h>
+#include <stdbool.h>
 #include <stdlib.h>
 #include "util.h"
 
@@ -84,6 +86,18 @@ static ir_t* _gen_ir(node_t* node, FILE* stream)
             fprintf(stream, "\n");
             return ir_result;
         }
+        case NODE_PAR: {
+            node_par_t* par = (node_par_t*)node;
+            node_t* cur = par->contents;
+            for (; cur; cur = cur->next) {
+                _gen_ir(cur, stream);
+            }
+
+            break;
+        }
+        case NODE_SEM:
+        case NODE_R_PAR:
+            assert(false && "wtf!?");
         case NODE_EOF:
             break;
     }

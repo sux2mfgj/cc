@@ -20,7 +20,7 @@ PARSER_TEST(sem)
         .text = ";",
     };
 
-    assert_that(parse(&context), is_null);
+    assert_that(parse(&context), is_equal_to_contents_of(&sem_node, sizeof sem_node));
 }
 
 PARSER_TEST(num_0)
@@ -44,12 +44,15 @@ PARSER_TEST(num_0)
         .uint64 = 0,
     };
 
-    node_t* result = parse(&context);
-    assert_that(result->type, is_equal_to(NODE_VAL));
-    assert_that(((node_val_t*)result)->token,
+    node_t* n = parse(&context);
+    assert_that(n->type, is_equal_to(NODE_VAL));
+    assert_that(((node_val_t*)n)->token,
                 is_equal_to_contents_of(&token, sizeof token));
-    assert_that(parse(&context),
-                is_equal_to_contents_of(&eof_node, sizeof eof_node));
+    n = parse(&context);
+    assert_that(n->type , is_equal_to(NODE_SEM));
+    get_next_token(&context);
+    n = parse(&context);
+    assert_that(n, is_equal_to_contents_of(&eof_node, sizeof eof_node));
 }
 
 PARSER_TEST(op_0)
@@ -151,6 +154,35 @@ PARSER_TEST(parentheses_0)
     assert_that (parse(&context), is_equal_to_contents_of(&eof_node, sizeof eof_node));
 }
 
+PARSER_TEST(parentheses_1)
+{
+    parse_context_t context = {
+        .text = "{1 + 2;}",
+    };
+
+    node_t* n1 = parse(&context);
+    assert_that (n1, is_non_null);
+    assert_that (n1->type, is_equal_to(NODE_PAR));
+
+    node_par_t* np = (node_par_t*)n1;
+    assert_that (np->contents, is_non_null);
+    assert_that (np->contents->type, is_equal_to(NODE_OP));
+
+    token_number_t token_1 = {
+        .base =
+            {
+                .type = TK_NUM,
+            },
+        .uint64 = 1,
+    };
+
+    node_op_t *op = (node_op_t*)np->contents;
+    assert_that (op->left->type, is_equal_to(NODE_VAL));
+    assert_that (op->right->type, is_equal_to(NODE_VAL));
+    assert_that (op->base.next, is_null);
+    assert_that (parse(&context), is_equal_to_contents_of(&eof_node, sizeof eof_node));
+}
+
 TestSuite* parser_tests(void)
 {
     TestSuite* suite = create_test_suite();
@@ -162,6 +194,7 @@ TestSuite* parser_tests(void)
     PARSER_ADDTEST(op_1);
     PARSER_ADDTEST(op_2);
     PARSER_ADDTEST(parentheses_0);
+    PARSER_ADDTEST(parentheses_1);
 
     return suite;
 }

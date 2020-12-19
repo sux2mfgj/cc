@@ -6,6 +6,7 @@ typedef enum {
     NODE_OP,
     NODE_VAL,
     NODE_EOF,
+    NODE_SEM,
     NODE_PAR,
     NODE_R_PAR,
 } node_type_t;
