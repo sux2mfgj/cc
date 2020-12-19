@@ -4,8 +4,8 @@
 #include <stdbool.h>
 #include <stdlib.h>
 #include <string.h>
-#include "util.h"
 #include "debug.h"
+#include "util.h"
 
 static void skip_separators(parse_context_t* context)
 {
@@ -45,11 +45,22 @@ static bool parse_value(parse_context_t* context, uint64_t* result, char** word)
     return true;
 }
 
-token_t* get_next_token(parse_context_t* context)
+static token_t* front;
+
+static token_t* _next_token(parse_context_t* context, bool step)
 {
     skip_separators(context);
 
     token_t* ret = NULL;
+    if (front) {
+        ret = front;
+
+        if (step) {
+            front = NULL;
+        }
+
+        goto found;
+    }
 
     // parse number
     if (is_number(context)) {
@@ -64,7 +75,7 @@ token_t* get_next_token(parse_context_t* context)
         number_token->uint64 = value;
 
         ret = (token_t*)number_token;
-        debug ("token [number] %d\n", value);
+        debug("token [number] %d\n", value);
         goto found;
     }
 
@@ -75,7 +86,7 @@ token_t* get_next_token(parse_context_t* context)
         opr_token->type = OP_PLUS;
 
         ret = (token_t*)opr_token;
-        debug ("token [op] +\n");
+        debug("token [op] +\n");
         goto found;
     }
 
@@ -86,7 +97,7 @@ token_t* get_next_token(parse_context_t* context)
         opr_token->type = OP_MINUS;
 
         ret = (token_t*)opr_token;
-        debug ("token [op] -\n");
+        debug("token [op] -\n");
         goto found;
     }
 
@@ -97,7 +108,7 @@ token_t* get_next_token(parse_context_t* context)
         opr_token->type = OP_MUL;
 
         ret = (token_t*)opr_token;
-        debug ("token [op] *\n");
+        debug("token [op] *\n");
         goto found;
     }
 
@@ -108,7 +119,7 @@ token_t* get_next_token(parse_context_t* context)
         opr_token->type = OP_DIV;
 
         ret = (token_t*)opr_token;
-        debug ("token [op] /\n");
+        debug("token [op] /\n");
         goto found;
     }
 
@@ -118,27 +129,27 @@ token_t* get_next_token(parse_context_t* context)
         token->type = TK_SEM;
 
         ret = (token_t*)token;
-        debug ("token [op] ;\n");
+        debug("token [op] ;\n");
         goto found;
     }
 
     if (*context->text == '{') {
         context->text++;
-        token_t* token = calloc (1, sizeof(token_t));
+        token_t* token = calloc(1, sizeof(token_t));
         token->type = TK_L_PAR;
 
         ret = (token_t*)token;
-        debug ("token [left parenth] {\n");
+        debug("token [left parenth] {\n");
         goto found;
     }
 
     if (*context->text == '}') {
         context->text++;
-        token_t* token = calloc (1, sizeof(token_t));
+        token_t* token = calloc(1, sizeof(token_t));
         token->type = TK_R_PAR;
 
         ret = (token_t*)token;
-        debug ("token [left parenth] }\n");
+        debug("token [right parenth] }\n");
         goto found;
     }
 
@@ -147,7 +158,7 @@ token_t* get_next_token(parse_context_t* context)
         token_t* eof_token = calloc(1, sizeof(token_t));
         eof_token->type = TK_EOF;
         ret = (token_t*)eof_token;
-        debug ("token [op] <EOF>\n");
+        debug("token [op] <EOF>\n");
         goto found;
     }
 
@@ -155,6 +166,19 @@ token_t* get_next_token(parse_context_t* context)
     return NULL;
 
 found:
+    if (!step) {
+        front = ret;
+    }
+
     return ret;
 }
 
+token_t* get_next_token(parse_context_t* ctx)
+{
+    return _next_token(ctx, true);
+}
+
+token_t* get_front_token(parse_context_t* ctx)
+{
+    return _next_token(ctx, false);
+}

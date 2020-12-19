@@ -40,6 +40,10 @@ static node_t eof_node = {
     .type = NODE_EOF,
 };
 
+static node_t sem_node = {
+    .type = NODE_SEM,
+};
+
 TestSuite* lexer_tests(void);
 TestSuite* parser_tests(void);
 

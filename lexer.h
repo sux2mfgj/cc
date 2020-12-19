@@ -36,3 +36,4 @@ typedef struct {
 } parse_context_t;
 
 token_t* get_next_token(parse_context_t* context);
+token_t* get_front_token(parse_context_t *context);

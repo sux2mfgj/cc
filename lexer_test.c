@@ -67,14 +67,6 @@ LEXER_TEST(op_0)
         .text = "1 + 1;",
     };
 
-    token_opr_t plus_token = {
-        .base =
-            {
-                .type = TK_OPR,
-            },
-        .type = OP_PLUS,
-    };
-
     token_number_t num_1_token = {
         .base =
             {
@@ -101,10 +93,48 @@ LEXER_TEST(parentheses_0)
         .text = "{}",
     };
 
+    assert_that(get_next_token(&context),
+                is_equal_to_contents_of(&l_t, sizeof l_t));
+    assert_that(get_next_token(&context),
+                is_equal_to_contents_of(&r_t, sizeof r_t));
+}
 
+LEXER_TEST(front_0)
+{
+    parse_context_t ctx = {
+        .text = "{1 + 2;}",
+    };
 
-    assert_that(get_next_token(&context), is_equal_to_contents_of(&l_t, sizeof l_t));
-    assert_that(get_next_token(&context), is_equal_to_contents_of(&r_t, sizeof r_t));
+    assert_that(get_front_token(&ctx),
+                is_equal_to_contents_of(&l_t, sizeof l_t));
+    assert_that(get_next_token(&ctx),
+                is_equal_to_contents_of(&l_t, sizeof l_t));
+
+    token_number_t num_1_token = {
+        .base =
+            {
+                .type = TK_NUM,
+            },
+        .uint64 = 1,
+    };
+
+    token_number_t num_2_token = {
+        .base =
+            {
+                .type = TK_NUM,
+            },
+        .uint64 = 2,
+    };
+
+    assert_that(get_next_token(&ctx),
+                is_equal_to_contents_of(&num_1_token, sizeof num_1_token));
+    assert_that(get_next_token(&ctx),
+                is_equal_to_contents_of(&plus_token, sizeof plus_token));
+    assert_that(get_front_token(&ctx),
+                is_equal_to_contents_of(&num_2_token, sizeof num_2_token));
+    assert_that(get_next_token(&ctx),
+                is_equal_to_contents_of(&num_2_token, sizeof num_2_token));
+    //TODO
 }
 
 TestSuite* lexer_tests()
