@@ -137,6 +137,22 @@ LEXER_TEST(front_0)
     //TODO
 }
 
+LEXER_TEST(uint64_t)
+{
+    parse_context_t ctx ={
+        .text = "uint64_t",
+    };
+
+    token_ctype_t t = {
+        .base = {
+            .type = TK_TYPE,
+        },
+        .type = TYPE_UINT64,
+    };
+
+    assert_that(get_next_token(&ctx), is_equal_to_contents_of(&t, sizeof t));
+}
+
 TestSuite* lexer_tests()
 {
     TestSuite* suite = create_test_suite();
@@ -146,6 +162,7 @@ TestSuite* lexer_tests()
     LEXER_ADDTEST(number_0);
     LEXER_ADDTEST(op_0);
     LEXER_ADDTEST(parentheses_0);
+    LEXER_ADDTEST(uint64_t);
 
     return suite;
 }
