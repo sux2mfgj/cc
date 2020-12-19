@@ -37,7 +37,6 @@ static bool parse_value(parse_context_t* context, uint64_t* result, char** word)
     long value = strtol(*word, NULL, 10);
     if (errno) {
         warn("detect invalid value (cannot parse by strtol)\n");
-        ;
         return false;
     }
 
@@ -47,8 +46,7 @@ static bool parse_value(parse_context_t* context, uint64_t* result, char** word)
 
 static token_t* try_to_parse_reserved(parse_context_t* ctx)
 {
-    if (!strncmp(ctx->text, "uint64_t", sizeof "uint64_t"))
-    {
+    if (!strncmp(ctx->text, "uint64_t", sizeof "uint64_t")) {
         ctx->text += sizeof "uint64_t";
         token_ctype_t* token = calloc(1, sizeof(token_ctype_t));
         token->base.type = TK_TYPE;
@@ -56,7 +54,7 @@ static token_t* try_to_parse_reserved(parse_context_t* ctx)
         return (token_t*)token;
     }
 
-    //TODO add other reserved words
+    // TODO add other reserved words
 
     return NULL;
 }
@@ -170,7 +168,7 @@ static token_t* _next_token(parse_context_t* context, bool step)
     }
 
     ret = try_to_parse_reserved(context);
-    if(ret) {
+    if (ret) {
         goto found;
     }
 

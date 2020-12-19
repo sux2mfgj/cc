@@ -137,7 +137,7 @@ LEXER_TEST(front_0)
     //TODO
 }
 
-LEXER_TEST(uint64_t)
+LEXER_TEST(uint64_t_0)
 {
     parse_context_t ctx ={
         .text = "uint64_t",
@@ -162,7 +162,7 @@ TestSuite* lexer_tests()
     LEXER_ADDTEST(number_0);
     LEXER_ADDTEST(op_0);
     LEXER_ADDTEST(parentheses_0);
-    LEXER_ADDTEST(uint64_t);
+    LEXER_ADDTEST(uint64_t_0);
 
     return suite;
 }
