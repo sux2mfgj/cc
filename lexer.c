@@ -46,11 +46,13 @@ static bool parse_value(parse_context_t* context, uint64_t* result, char** word)
 
 static token_t* try_to_parse_reserved(parse_context_t* ctx)
 {
-    if (!strncmp(ctx->text, "uint64_t", sizeof "uint64_t")) {
+    if (!strncmp(ctx->text, "uint64_t", strlen("uint64_t"))) { // && *(ctx->text + sizeof "uint64_t") == ' ' // e.g. uint64_t12 is valid and not type.
         ctx->text += sizeof "uint64_t";
+
         token_ctype_t* token = calloc(1, sizeof(token_ctype_t));
         token->base.type = TK_TYPE;
         token->type = TYPE_UINT64;
+
         return (token_t*)token;
     }
 
@@ -61,15 +63,18 @@ static token_t* try_to_parse_reserved(parse_context_t* ctx)
 
 static token_t* try_to_parse_id(parse_context_t* ctx)
 {
-    if (strlen(ctx->text) == 0)
+    int len = strlen(ctx->text);
+    if (len == 0)
     {
         return NULL;
     }
 
     token_id_t *id = calloc(1, sizeof(token_id_t));
     id->base.type = TK_ID;
-    id->id = calloc(1, strlen(ctx->text) + 1);
-    strncpy(id->id, ctx->text, strlen(ctx->text));
+    id->id = calloc(1, len + 1); // 1 is for null.
+    strncpy(id->id, ctx->text, len);
+
+    ctx->text += len;
 
     return (token_t*)id;
 }
