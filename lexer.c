@@ -59,6 +59,21 @@ static token_t* try_to_parse_reserved(parse_context_t* ctx)
     return NULL;
 }
 
+static token_t* try_to_parse_id(parse_context_t* ctx)
+{
+    if (strlen(ctx->text) == 0)
+    {
+        return NULL;
+    }
+
+    token_id_t *id = calloc(1, sizeof(token_id_t));
+    id->base.type = TK_ID;
+    id->id = calloc(1, strlen(ctx->text) + 1);
+    strncpy(id->id, ctx->text, strlen(ctx->text));
+
+    return (token_t*)id;
+}
+
 static token_t* front;
 
 static token_t* _next_token(parse_context_t* context, bool step)
@@ -168,6 +183,11 @@ static token_t* _next_token(parse_context_t* context, bool step)
     }
 
     ret = try_to_parse_reserved(context);
+    if (ret) {
+        goto found;
+    }
+
+    ret = try_to_parse_id(context);
     if (ret) {
         goto found;
     }

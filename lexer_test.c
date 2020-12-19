@@ -153,6 +153,30 @@ LEXER_TEST(uint64_t_0)
     assert_that(get_next_token(&ctx), is_equal_to_contents_of(&t, sizeof t));
 }
 
+LEXER_TEST(uint64_t_1)
+{
+    parse_context_t ctx ={
+        .text = "uint64_t a;",
+    };
+
+    token_ctype_t t = {
+        .base = {
+            .type = TK_TYPE,
+        },
+        .type = TYPE_UINT64,
+    };
+
+    token_id_t id = {
+        .base = {
+            .type = TK_ID,
+        },
+        .id = "a",
+    };
+
+    assert_that(get_next_token(&ctx), is_equal_to_contents_of(&t, sizeof t));
+    assert_that(get_next_token(&ctx), is_equal_to_contents_of(&id, sizeof id));
+}
+
 TestSuite* lexer_tests()
 {
     TestSuite* suite = create_test_suite();
@@ -163,6 +187,7 @@ TestSuite* lexer_tests()
     LEXER_ADDTEST(op_0);
     LEXER_ADDTEST(parentheses_0);
     LEXER_ADDTEST(uint64_t_0);
+    LEXER_ADDTEST(uint64_t_1);
 
     return suite;
 }

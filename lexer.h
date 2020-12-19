@@ -8,6 +8,7 @@ typedef enum {
     TK_SEM,    // ;
     TK_L_PAR,  //{
     TK_R_PAR,  // }
+    TK_ID,
     TK_EOF,
     TK_TYPE,
 } token_type_t;
@@ -39,6 +40,11 @@ typedef struct {
     token_t base;
     type_type_t type;
 } token_ctype_t;
+
+typedef struct {
+    token_t base;
+    char* id;
+} token_id_t;
 
 typedef struct {
     char* text;
