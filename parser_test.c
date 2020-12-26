@@ -10,6 +10,9 @@ PARSER_TEST(null)
         .text = "",
     };
 
+    node_t* n = parse(&context);
+    assert_that(n, is_non_null);
+
     assert_that(parse(&context),
                 is_equal_to_contents_of(&eof_node, sizeof eof_node));
 }
@@ -183,6 +186,40 @@ PARSER_TEST(parentheses_1)
     assert_that (parse(&context), is_equal_to_contents_of(&eof_node, sizeof eof_node));
 }
 
+PARSER_TEST(uint64_t)
+{
+    parse_context_t context = {
+        .text = "uint64_t a;",
+    };
+
+    node_t* n = parse(&context);
+    assert_that (n, is_non_null);
+    assert_that (n->type, is_equal_to(NODE_DEF_VAL));
+    node_def_val_t* def = (node_def_val_t*)n;
+    assert_that (def->type, is_equal_to(TYPE_UINT64));
+    assert_that (def->id, is_equal_to_contents_of("a", strlen("a") + 1));
+    assert_that (def->init, is_null);
+
+    assert_that (parse(&context), is_equal_to_contents_of(&eof_node, sizeof eof_node));
+}
+
+PARSER_TEST(multi_node)
+{
+    parse_context_t ctx = {
+        .text =
+            "{"
+            "   uint64_t a;"
+            "}",
+    };
+
+    node_t* n = parse(&ctx);
+    assert_that (n, is_non_null);
+    assert_that (n->type, is_equal_to(NODE_PAR));
+
+    node_par_t* par = (node_par_t*)n;
+    assert_that (par->contents, is_non_null);
+}
+
 TestSuite* parser_tests(void)
 {
     TestSuite* suite = create_test_suite();
@@ -195,6 +232,8 @@ TestSuite* parser_tests(void)
     PARSER_ADDTEST(op_2);
     PARSER_ADDTEST(parentheses_0);
     PARSER_ADDTEST(parentheses_1);
+    PARSER_ADDTEST(uint64_t);
+    PARSER_ADDTEST(multi_node);
 
     return suite;
 }

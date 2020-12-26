@@ -19,8 +19,7 @@ static node_t* parse_op(parse_context_t* ctx,
     node->left = left;
     switch (op_token->type) {
         case OP_PLUS:
-        case OP_MINUS:
-        {
+        case OP_MINUS: {
             node_t* n1 = _parse(ctx, NULL);
             node_t* n2 = _parse(ctx, n1);
             node->right = n2->type != NODE_SEM ? n2 : n1;
@@ -28,7 +27,7 @@ static node_t* parse_op(parse_context_t* ctx,
         }
         case OP_MUL:
         case OP_DIV:
-            //node->right = parse(ctx);
+            // node->right = parse(ctx);
             node->right = _parse(ctx, NULL);
             break;
     }
@@ -37,32 +36,43 @@ static node_t* parse_op(parse_context_t* ctx,
     return (node_t*)node;
 }
 
+static bool skip_semicolon(parse_context_t* ctx)
+{
+    node_t* sem_node = parse(ctx);
+    get_next_token(ctx);
+
+    return sem_node->type == NODE_SEM;
+}
+
 static node_t* parse_parenthe(parse_context_t* ctx)
 {
-    node_par_t *node = calloc(1, sizeof(node_op_t));
+    node_par_t* node = calloc(1, sizeof(node_op_t));
     node->base.type = NODE_PAR;
     node->base.next = NULL;
 
-    node_t *prev = NULL;
+    node_t* prev = NULL;
 
-    while(true)
-    {
+    while (true) {
         node_t* content = parse(ctx);
-        if(content->type == NODE_R_PAR)
-        {
+        assert (content->type != NODE_EOF);
+
+        if (content->type == NODE_R_PAR) {
             break;
         }
 
-        if(content->type == NODE_SEM)
-        {
+        if (content->type == NODE_SEM) {
             get_next_token(ctx);
-        } else {
-            if(!prev)
+        }
+        else {
+            if(!skip_semicolon(ctx))
             {
+                assert("wtf");
+            }
+
+            if (!prev) {
                 prev = content;
             }
-            else
-            {
+            else {
                 prev->next = content;
                 prev = prev->next;
             }
@@ -92,9 +102,44 @@ static node_t* generate_node(node_type_t type)
     return node;
 }
 
+static node_t* parse_def_val(parse_context_t* ctx, token_ctype_t* ctype)
+{
+    node_def_val_t* node = calloc(1, sizeof(node_def_val_t));
+
+    node->base.type = NODE_DEF_VAL;
+    node->base.next = NULL;
+
+    node->type = ctype->type;
+
+    token_t* id_token = get_next_token(ctx);
+    assert(id_token->type == TK_ID);
+
+    node->id = ((token_id_t*)id_token)->id;
+
+    token_t* next = get_next_token(ctx);
+    if(next->type == TK_SEM)
+    {
+        return (node_t*)node;
+    }
+
+    NOT_YET_IMPLEMETED;
+    if(next->type == TK_ASSIGN)
+    {
+        //TODO
+        NOT_YET_IMPLEMETED;
+    }
+
+    node->init = parse(ctx);
+    if(!skip_semicolon(ctx))
+    {
+        assert("wtf");
+    }
+
+    return (node_t*)node;
+}
+
 static node_t* _parse(parse_context_t* ctx, node_t* node)
 {
-    //token_t* t1 = get_next_token(ctx);
     token_t* t1 = get_front_token(ctx);
 
     if (t1->type == TK_SEM) {
@@ -111,8 +156,6 @@ static node_t* _parse(parse_context_t* ctx, node_t* node)
         return generate_node(NODE_R_PAR);
     }
 
-    node_t* n1;
-
     if (t1->type == TK_NUM) {
         assert(!node && "wtf");
         return parse_val((token_number_t*)get_next_token(ctx));
@@ -125,33 +168,38 @@ static node_t* _parse(parse_context_t* ctx, node_t* node)
         get_next_token(ctx);
         return parse_parenthe(ctx);
     }
+    else if (t1->type == TK_TYPE) {
+        return parse_def_val(ctx, (token_ctype_t*)get_next_token(ctx));
+    }
     else {
         NOT_YET_IMPLEMETED;
-    }
-
-    if (!node) {
-        return n1;
     }
 
     NOT_YET_IMPLEMETED;
 }
 
-static node_t *eof_node = NULL;
+static node_t* eof_node = NULL;
 node_t* parse(parse_context_t* ctx)
 {
-    if(eof_node)
-    {
+    if (eof_node) {
         return eof_node;
     }
 
-    node_t* node = _parse(ctx, NULL);
+    node_t* node = NULL;
     while(true)
     {
         node_t* next = _parse(ctx, node);
+
+        if (next->type == NODE_EOF)
+        {
+            eof_node = next;
+        }
+
         if(next->type == NODE_SEM || next->type == NODE_EOF)
         {
-            return node;
+            return node ? node : next;
         }
+
         node = next;
     }
 

@@ -17,13 +17,19 @@ void readline(char* buffer)
     }
 }
 
-int main(int argc, char** argv)
+static char* read_line(void)
 {
-    char buffer[81] = {0};
+    static char buffer[81];
     readline(buffer);
 
+    return buffer;
+}
+
+int main(int argc, char** argv)
+{
+
     parse_context_t context = {
-        .text = buffer,
+        .read_line = read_line,
     };
 
     debug_enable();

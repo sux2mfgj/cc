@@ -23,8 +23,8 @@ LEXER_TEST(null)
         .text = "",
     };
 
-    assert_that(get_next_token(&context),
-                is_equal_to_contents_of(&eof_token, sizeof eof_token));
+    token_t* t = get_next_token(&context);
+    assert_that(t->type, is_equal_to(TK_EOF));
 }
 
 LEXER_TEST(sem_null)
@@ -175,8 +175,45 @@ LEXER_TEST(uint64_t_1)
 
     token_t *t = get_next_token(&ctx);
     assert_that(t->type, is_equal_to(TK_TYPE));
-    //assert_that(get_next_token(&ctx), is_equal_to_contents_of(&t, sizeof t));
-    //assert_that(get_next_token(&ctx), is_equal_to_contents_of(&id, sizeof id));
+    token_ctype_t *ctype = (token_ctype_t*)t;
+    assert_that(ctype->type, is_equal_to(TYPE_UINT64));
+
+    t = get_next_token(&ctx);
+    assert_that (t->type, is_equal_to(TK_ID));
+    token_id_t* id = (token_id_t*)t;
+    assert_that (id->id, is_equal_to_contents_of("a", strlen("a") + 1));
+    //TODO
+}
+
+LEXER_TEST(multi_node)
+{
+    parse_context_t ctx = {
+        .text =
+            "{"
+            "   uint64_t a;"
+            "}",
+    };
+
+    token_t *t = get_next_token(&ctx);
+    assert_that(t, is_non_null);
+    assert_that(t->type, is_equal_to(TK_L_PAR));
+
+    t = get_next_token(&ctx);
+    assert_that(t, is_non_null);
+    assert_that(t->type, is_equal_to(TK_TYPE));
+
+    t = get_next_token(&ctx);
+    assert_that(t, is_non_null);
+    assert_that(t->type, is_equal_to(TK_ID));
+
+    assert_that(((token_id_t*)t)->id, is_equal_to_contents_of("a", strlen("a") + 1));
+
+    t = get_next_token(&ctx);
+    assert_that(t->type, is_equal_to(TK_SEM));
+
+    t = get_next_token(&ctx);
+    assert_that(t, is_non_null);
+    assert_that(t->type, is_equal_to(TK_R_PAR));
 }
 
 TestSuite* lexer_tests()
@@ -190,6 +227,7 @@ TestSuite* lexer_tests()
     LEXER_ADDTEST(parentheses_0);
     LEXER_ADDTEST(uint64_t_0);
     LEXER_ADDTEST(uint64_t_1);
+    LEXER_ADDTEST(multi_node);
 
     return suite;
 }

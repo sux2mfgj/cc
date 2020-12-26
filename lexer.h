@@ -8,9 +8,10 @@ typedef enum {
     TK_SEM,    // ;
     TK_L_PAR,  //{
     TK_R_PAR,  // }
+    TK_ASSIGN, // =
     TK_ID,
     TK_EOF,
-    TK_TYPE,
+    TK_TYPE,   // uint64_t
 } token_type_t;
 
 typedef struct _token_base {
@@ -46,9 +47,14 @@ typedef struct {
     char* id;
 } token_id_t;
 
+//typedef struct {
+//    char* text;
+//} parse_context_t;
+
 typedef struct {
-    char* text;
+    char* (*read_line)(void);
 } parse_context_t;
+
 
 token_t* get_next_token(parse_context_t* context);
 token_t* get_front_token(parse_context_t* context);
