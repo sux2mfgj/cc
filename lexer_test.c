@@ -186,7 +186,7 @@ LEXER_TEST(uint64_t_1)
 LEXER_TEST(multi_node)
 {
     PREPARE_CTX(
-            "{}"
+            "{"
             "   uint64_t a;"
             "}");
 
@@ -205,10 +205,10 @@ LEXER_TEST(multi_node)
     assert_that(((token_id_t*)t)->id, is_equal_to_contents_of("a", strlen("a") +
 1));
 
-    t = get_next_token(&ctx);
+    t = get_next_token(ctx);
     assert_that(t->type, is_equal_to(TK_SEM));
 
-    t = get_next_token(&ctx);
+    t = get_next_token(ctx);
     assert_that(t, is_non_null);
     assert_that(t->type, is_equal_to(TK_R_PAR));
 }

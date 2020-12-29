@@ -280,134 +280,79 @@ found:
 }
 
 /*
-static lex_err_t _next_token(context_t* ctx, token_t** token)
-{
-    char t[81];
-    char* word = t;
-fill_buffer:
-    while (!*ctx->buffer) {
-        if (!ctx->read_line(ctx->buffer)) {
-            return LEX_EOI;
-        }
-    }
-
-    while (is_skip_char(*ctx->buffer)) {
-        ctx->buffer++;
-    }
-
-    if (!*ctx->buffer) {
-        goto fill_buffer;
-    }
-
-    if (is_reserved(*ctx->buffer)) {
-        switch (*ctx->buffer) {
-            case '=':
-            case '!':
-            case '<':
-            case '>': {
-                *word++ = *ctx->buffer++;
-                if (*ctx->buffer == '=') {
-                    *word++ = *ctx->buffer++;
-                }
-                goto found;
-            }
-            case '|': {
-                *word++ = *ctx->buffer++;
-                if (*ctx->buffer == '|') {
-                    *word++ = *ctx->buffer++;
-                }
-                goto found;
-            }
-            case '&': {
-                *word++ = *ctx->buffer++;
-                if (*ctx->buffer == '&') {
-                    *word++ = *ctx->buffer++;
-                }
-                goto found;
-            }
-            case '+': {
-                *word++ = *ctx->buffer++;
-                if (*ctx->buffer == '+') {
-                    *word++ = *ctx->buffer++;
-                }
-                goto found;
-            }
-            case '-': {
-                *word++ = *ctx->buffer++;
-                if (*ctx->buffer == '-') {
-                    *word++ = *ctx->buffer++;
-                }
-                else if (*ctx->buffer == '>') {
-                    *word++ = *ctx->buffer++;
-                }
-                goto found;
-            }
-            default: {
-                *word++ = *ctx->buffer++;
-                goto found;
-            }
-        }
-    }
-
-    if (*ctx->buffer == '"') {
-        while (true) {
-            if (*ctx->buffer == '\\') {
-                *word++ = *ctx->buffer++;
-            }
+switch (*ctx->buffer) {
+    case '=':
+    case '!':
+    case '<':
+    case '>': {
+        *word++ = *ctx->buffer++;
+        if (*ctx->buffer == '=') {
             *word++ = *ctx->buffer++;
-            if (*ctx->buffer == '"') {
-                *word++ = *ctx->buffer++;
-                goto found;
-            }
         }
+        goto found;
     }
-
-    if (*ctx->buffer == '\'') {
-        while (true) {
-            if (*ctx->buffer == '\\') {
-                *word++ = *ctx->buffer++;
-            }
+    case '|': {
+        *word++ = *ctx->buffer++;
+        if (*ctx->buffer == '|') {
             *word++ = *ctx->buffer++;
-            if (*ctx->buffer == '\'') {
-                *word++ = *ctx->buffer++;
-                goto found;
-            }
         }
+        goto found;
     }
+    case '&': {
+        *word++ = *ctx->buffer++;
+        if (*ctx->buffer == '&') {
+            *word++ = *ctx->buffer++;
+        }
+        goto found;
+    }
+    case '+': {
+        *word++ = *ctx->buffer++;
+        if (*ctx->buffer == '+') {
+            *word++ = *ctx->buffer++;
+        }
+        goto found;
+    }
+    case '-': {
+        *word++ = *ctx->buffer++;
+        if (*ctx->buffer == '-') {
+            *word++ = *ctx->buffer++;
+        }
+        else if (*ctx->buffer == '>') {
+            *word++ = *ctx->buffer++;
+        }
+        goto found;
+    }
+    default: {
+        *word++ = *ctx->buffer++;
+        goto found;
+    }
+}
 
-    while (!is_skip_char(*ctx->buffer) || !*ctx->buffer) {
-        if (is_reserved(*ctx->buffer)) {
-            goto found;
+if (*ctx->buffer == '"') {
+    while (true) {
+        if (*ctx->buffer == '\\') {
+            *word++ = *ctx->buffer++;
         }
         *word++ = *ctx->buffer++;
-    }
-
-found:
-    *word = '\0';
-
-    return LEX_OK;
-}
-
-token_t* get_next_token(context_t* ctx)
-{
-    token_t *token;
-    lex_err_t result = _next_token(ctx, &token);
-    switch (result) {
-        case LEX_OK:
-        {
-            return token;
-        }
-        case LEX_EOI:
-        {
-            token = calloc(1, sizeof *token);
-            token->type = TK_EOF;
-            return token;
+        if (*ctx->buffer == '"') {
+            *word++ = *ctx->buffer++;
+            goto found;
         }
     }
-
-    assert("wtf");
 }
-token_t* get_front_token(context_t* ctx);
+
+if (*ctx->buffer == '\'') {
+    while (true) {
+        if (*ctx->buffer == '\\') {
+            *word++ = *ctx->buffer++;
+        }
+        *word++ = *ctx->buffer++;
+        if (*ctx->buffer == '\'') {
+            *word++ = *ctx->buffer++;
+            goto found;
+        }
+    }
+}
 */
 
 static token_t* front = NULL;
