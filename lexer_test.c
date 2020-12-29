@@ -1,5 +1,4 @@
 #include "lexer.h"
-#include <unistd.h>
 #include "test.h"
 
 static token_t eof_token = {
@@ -18,13 +17,6 @@ static token_t r_t = {
 #define LEXER_TEST(name) Ensure(lexer_##name)
 #define LEXER_ADDTEST(name) add_test(suite, lexer_##name)
 
-#define PREPARE_CTX(text)                  \
-    int fds[2];                            \
-    int status = pipe(fds);                \
-    assert_that(status, is_equal_to(0));   \
-    context_t* ctx = init_context(fds[0]); \
-    write(fds[1], text, sizeof text);      \
-    close(fds[1]);
 
 LEXER_TEST(null)
 {

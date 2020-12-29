@@ -6,9 +6,9 @@
 #include "lexer.h"
 #include "util.h"
 
-static node_t* _parse(parse_context_t* ctx, node_t* node);
+static node_t* _parse(context_t* ctx, node_t* node);
 
-static node_t* parse_op(parse_context_t* ctx,
+static node_t* parse_op(context_t* ctx,
                         node_t* left,
                         token_opr_t* op_token)
 {
@@ -36,7 +36,7 @@ static node_t* parse_op(parse_context_t* ctx,
     return (node_t*)node;
 }
 
-static bool skip_semicolon(parse_context_t* ctx)
+static bool skip_semicolon(context_t* ctx)
 {
     node_t* sem_node = parse(ctx);
     get_next_token(ctx);
@@ -44,7 +44,7 @@ static bool skip_semicolon(parse_context_t* ctx)
     return sem_node->type == NODE_SEM;
 }
 
-static node_t* parse_parenthe(parse_context_t* ctx)
+static node_t* parse_parenthe(context_t* ctx)
 {
     node_par_t* node = calloc(1, sizeof(node_op_t));
     node->base.type = NODE_PAR;
@@ -102,7 +102,7 @@ static node_t* generate_node(node_type_t type)
     return node;
 }
 
-static node_t* parse_def_val(parse_context_t* ctx, token_ctype_t* ctype)
+static node_t* parse_def_val(context_t* ctx, token_ctype_t* ctype)
 {
     node_def_val_t* node = calloc(1, sizeof(node_def_val_t));
 
@@ -138,7 +138,7 @@ static node_t* parse_def_val(parse_context_t* ctx, token_ctype_t* ctype)
     return (node_t*)node;
 }
 
-static node_t* _parse(parse_context_t* ctx, node_t* node)
+static node_t* _parse(context_t* ctx, node_t* node)
 {
     token_t* t1 = get_front_token(ctx);
 
@@ -179,7 +179,7 @@ static node_t* _parse(parse_context_t* ctx, node_t* node)
 }
 
 static node_t* eof_node = NULL;
-node_t* parse(parse_context_t* ctx)
+node_t* parse(context_t* ctx)
 {
     if (eof_node) {
         return eof_node;
