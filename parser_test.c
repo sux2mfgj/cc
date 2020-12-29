@@ -130,22 +130,20 @@ PARSER_TEST(op_2)
     node_op_t* right_op = (node_op_t*)no_op->right;
     assert_that(right_op->token, is_equal_to_contents_of(&div_op, sizeof div_op));
 }
-/*
 
 PARSER_TEST(parentheses_0)
 {
-    parse_context_t context = {
-        .text = "{}",
-    };
+    PREPARE_CTX("{}");
 
-    node_t* n1 = parse(&context);
+    node_t* n1 = parse(ctx);
     assert_that (n1, is_non_null);
     assert_that (n1->type, is_equal_to(NODE_PAR));
 
     node_par_t* np = (node_par_t*)n1;
     assert_that (np->contents, is_null);
-    assert_that (parse(&context), is_equal_to_contents_of(&eof_node, sizeof eof_node));
+    assert_that (parse(ctx), is_equal_to_contents_of(&eof_node, sizeof eof_node));
 }
+/*
 
 PARSER_TEST(parentheses_1)
 {
