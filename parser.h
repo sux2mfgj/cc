@@ -1,7 +1,7 @@
 #pragma once
 
-#include "lexer.h"
 #include "context.h"
+#include "lexer.h"
 
 typedef enum {
     NODE_OP,
@@ -41,7 +41,7 @@ typedef struct {
     node_t base;
     type_type_t type;
     char* id;
-    node_t *init;
+    node_t* init;
 } node_def_val_t;
 
 typedef struct {

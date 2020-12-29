@@ -4,22 +4,22 @@
 #include "context.h"
 
 typedef enum {
-    TK_OPR,    // +, -, *, /, ==, !=, +=,
-    TK_NUM,    // 1 ~ 9
-    TK_SEM,    // ;
-    TK_L_PAR,  //{
-    TK_R_PAR,  // }
-    TK_ASSIGN, // =
-    TK_NOT,    // !
+    TK_OPR,     // +, -, *, /, ==, !=, +=,
+    TK_NUM,     // 1 ~ 9
+    TK_SEM,     // ;
+    TK_L_PAR,   //{
+    TK_R_PAR,   // }
+    TK_ASSIGN,  // =
+    TK_NOT,     // !
     TK_ID,
     TK_EOF,
-    TK_TYPE,   // uint64_t
-    TK_RET,    // return
+    TK_TYPE,  // uint64_t
+    TK_RET,   // return
 } token_type_t;
 
 typedef struct _token_base {
     token_type_t type;
-    //TODO consider the word, maybe it is not needed.
+    // TODO consider the word, maybe it is not needed.
     char* word;
 } token_t;
 
@@ -31,7 +31,18 @@ typedef struct {
     };
 } token_number_t;
 
-typedef enum { OP_PLUS, OP_MINUS, OP_MUL, OP_DIV, OP_EQ, OP_NEQ, OP_ADDEQ, OP_MINEQ, OP_MULEQ, OP_DIVEQ } operator_type_t;
+typedef enum {
+    OP_PLUS,
+    OP_MINUS,
+    OP_MUL,
+    OP_DIV,
+    OP_EQ,
+    OP_NEQ,
+    OP_ADDEQ,
+    OP_MINEQ,
+    OP_MULEQ,
+    OP_DIVEQ
+} operator_type_t;
 
 typedef struct {
     token_t base;

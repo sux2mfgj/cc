@@ -8,9 +8,7 @@
 
 static node_t* _parse(context_t* ctx, node_t* node);
 
-static node_t* parse_op(context_t* ctx,
-                        node_t* left,
-                        token_opr_t* op_token)
+static node_t* parse_op(context_t* ctx, node_t* left, token_opr_t* op_token)
 {
     node_op_t* node = calloc(1, sizeof(node_op_t));
     node->base.type = NODE_OP;
@@ -54,7 +52,7 @@ static node_t* parse_parenthe(context_t* ctx)
 
     while (true) {
         node_t* content = parse(ctx);
-        assert (content->type != NODE_EOF);
+        assert(content->type != NODE_EOF);
 
         if (content->type == NODE_R_PAR) {
             break;
@@ -64,8 +62,7 @@ static node_t* parse_parenthe(context_t* ctx)
             get_next_token(ctx);
         }
         else {
-            if(!skip_semicolon(ctx))
-            {
+            if (!skip_semicolon(ctx)) {
                 assert("wtf");
             }
 
@@ -117,22 +114,19 @@ static node_t* parse_def_val(context_t* ctx, token_ctype_t* ctype)
     node->id = ((token_id_t*)id_token)->id;
 
     token_t* next = get_front_token(ctx);
-    if(next->type == TK_SEM)
-    {
+    if (next->type == TK_SEM) {
         return (node_t*)node;
     }
 
     NOT_YET_IMPLEMETED;
     next = get_next_token(ctx);
-    if(next->type == TK_ASSIGN)
-    {
-        //TODO
+    if (next->type == TK_ASSIGN) {
+        // TODO
         NOT_YET_IMPLEMETED;
     }
 
     node->init = parse(ctx);
-    if(!skip_semicolon(ctx))
-    {
+    if (!skip_semicolon(ctx)) {
         assert("wtf");
     }
 
@@ -212,17 +206,14 @@ node_t* parse(context_t* ctx)
     }
 
     node_t* node = NULL;
-    while(true)
-    {
+    while (true) {
         node_t* next = _parse(ctx, node);
 
-        if (next->type == NODE_EOF)
-        {
+        if (next->type == NODE_EOF) {
             eof_node = next;
         }
 
-        if(next->type == NODE_SEM || next->type == NODE_EOF)
-        {
+        if (next->type == NODE_SEM || next->type == NODE_EOF) {
             return node ? node : next;
         }
 
