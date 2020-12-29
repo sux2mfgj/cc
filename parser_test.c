@@ -15,16 +15,15 @@ PARSER_TEST(null)
                 is_equal_to_contents_of(&eof_node, sizeof eof_node));
 }
 
-/*
 PARSER_TEST(sem)
 {
-    parse_context_t context = {
-        .text = ";",
-    };
 
-    assert_that(parse(&context), is_equal_to_contents_of(&sem_node, sizeof sem_node));
+    PREPARE_CTX(";");
+
+    assert_that(parse(ctx), is_equal_to_contents_of(&sem_node, sizeof sem_node));
 }
 
+/*
 PARSER_TEST(num_0)
 {
     parse_context_t context = {
