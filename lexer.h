@@ -1,14 +1,16 @@
 #pragma once
 
 #include <stdint.h>
+#include "context.h"
 
 typedef enum {
-    TK_OPR,    // +, -, *, /
+    TK_OPR,    // +, -, *, /, ==, !=, +=,
     TK_NUM,    // 1 ~ 9
     TK_SEM,    // ;
     TK_L_PAR,  //{
     TK_R_PAR,  // }
     TK_ASSIGN, // =
+    TK_NOT,    // !
     TK_ID,
     TK_EOF,
     TK_TYPE,   // uint64_t
@@ -28,7 +30,7 @@ typedef struct {
     };
 } token_number_t;
 
-typedef enum { OP_PLUS, OP_MINUS, OP_MUL, OP_DIV } operator_type_t;
+typedef enum { OP_PLUS, OP_MINUS, OP_MUL, OP_DIV, OP_EQ, OP_NEQ, OP_ADDEQ } operator_type_t;
 
 typedef struct {
     token_t base;
@@ -47,14 +49,10 @@ typedef struct {
     char* id;
 } token_id_t;
 
-//typedef struct {
-//    char* text;
-//} parse_context_t;
+typedef enum {
+    LEX_OK,
+    LEX_EOI,
+} lex_err_t;
 
-typedef struct {
-    char* (*read_line)(void);
-} parse_context_t;
-
-
-token_t* get_next_token(parse_context_t* context);
-token_t* get_front_token(parse_context_t* context);
+token_t* get_next_token(context_t* context);
+//token_t* get_front_token(context_t* context);

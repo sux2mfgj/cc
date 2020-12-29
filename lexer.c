@@ -1,4 +1,5 @@
 #include "lexer.h"
+#include <assert.h>
 #include <err.h>
 #include <errno.h>
 #include <stdbool.h>
@@ -10,13 +11,11 @@
 #ifndef NDEBUG
 static void debug_print_token(token_t* t)
 {
-    switch(t->type)
-    {
-        case TK_OPR:
-        {
+    switch (t->type) {
+        case TK_OPR: {
             token_opr_t* op = (token_opr_t*)t;
             char c;
-            switch (op->type){
+            switch (op->type) {
                 case OP_PLUS:
                     c = '+';
                     break;
@@ -29,54 +28,50 @@ static void debug_print_token(token_t* t)
                 case OP_DIV:
                     c = '/';
                     break;
+                case OP_EQ:
+                    NOT_YET_IMPLEMETED;
+                    break;
+                case OP_NEQ:
+                    NOT_YET_IMPLEMETED;
+                    break;
             }
             debug("token [op]   %c\n", c);
             break;
         }
-        case TK_NUM:
-        {
+        case TK_NUM: {
             token_number_t* number_token = (token_number_t*)t;
             debug("token [num]  %d\n", number_token->uint64);
             break;
         }
-        case TK_SEM:
-        {
+        case TK_SEM: {
             debug("token [;]\n");
             break;
         }
-        case TK_L_PAR:
-        {
+        case TK_L_PAR: {
             debug("token [{]\n");
             break;
         }
-        case TK_R_PAR:
-        {
+        case TK_R_PAR: {
             debug("token [}]\n");
             break;
         }
-        case TK_ASSIGN:
-        {
+        case TK_ASSIGN: {
             debug("token [=]\n");
             break;
         }
-        case TK_ID:
-        {
+        case TK_ID: {
             debug("token [id] TODO\n");
             break;
         }
-        case TK_EOF:
-        {
+        case TK_EOF: {
             debug("token [eof]\n");
             break;
         }
-        case TK_TYPE:
-        {
+        case TK_TYPE: {
             token_ctype_t* ct = (token_ctype_t*)t;
             char* text;
-            switch(ct->type)
-            {
-                case TYPE_UINT64:
-                {
+            switch (ct->type) {
+                case TYPE_UINT64: {
                     text = "uint64_t";
                     break;
                 }
@@ -96,228 +91,272 @@ static bool is_skip_char(char c)
     return c == ' ' || c == '\n' || c == '\t';
 }
 
-static void skip_separators(parse_context_t* context)
+static bool is_number(char c)
 {
-    while (is_skip_char(*context->text))
-    {
-        context->text++;
-    }
+    return '0' <= c && c <= '9';
 }
 
-static bool is_number(parse_context_t* ctx)
+static token_t* parse_value(context_t* ctx)
 {
-    return '0' <= *ctx->text && *ctx->text <= '9';
-}
-
-static bool parse_value(parse_context_t* context, uint64_t* result, char** word)
-{
-    char* start = context->text;
-
+    char* start = ctx->buffer;
     int len = 0;
-    // decimal
-    do {
+    while (is_number(*ctx->buffer)) {
         len++;
-        context->text++;
-    } while (is_number(context));
+        ctx->buffer++;
+    }
 
-    *word = calloc(1, len);
-    memcpy(*word, start, len);
-
-    long value = strtol(*word, NULL, 10);
+    char buffer[81];
+    memcpy(buffer, start, len);
+    buffer[len] = '\0';
+    long value = strtol(buffer, NULL, 10);
     if (errno) {
-        warn("detect invalid value (cannot parse by strtol)\n");
-        return false;
-    }
-
-    *result = value;
-    return true;
-}
-
-static token_t* try_to_parse_reserved(parse_context_t* ctx)
-{
-    if (!strncmp(
-            ctx->text, "uint64_t",
-            strlen(
-                "uint64_t"))) {  // && *(ctx->text + sizeof "uint64_t") == ' '
-                                 // // e.g. uint64_t12 is valid and not type.
-        ctx->text += sizeof "uint64_t";
-
-        token_ctype_t* token = calloc(1, sizeof(token_ctype_t));
-        token->base.type = TK_TYPE;
-        token->type = TYPE_UINT64;
-
-        return (token_t*)token;
-    }
-
-    // TODO add other reserved words
-
-    return NULL;
-}
-
-static int id_strlen(const char* text)
-{
-    int len;
-    for (len = 0; !is_skip_char(*text) && *text != ';'; text++, len++)
-        ;
-    return len;
-}
-
-static token_t* try_to_parse_id(parse_context_t* ctx)
-{
-    int len = id_strlen(ctx->text);
-    if (len == 0) {
+        warn("detect invalue value (cannot parse by strtol)");
         return NULL;
     }
 
-    token_id_t* id = calloc(1, sizeof(token_id_t));
-    id->base.type = TK_ID;
-    id->id = calloc(1, len + 1);  // 1 is for null.
-    strncpy(id->id, ctx->text, len);
+    token_number_t* t = calloc(1, sizeof(token_number_t));
+    t->base.type = TK_NUM;
+    t->uint64 = value;
 
-    ctx->text += len;
-
-    return (token_t*)id;
+    return (token_t*)t;
 }
 
-static token_t* front = NULL;
-
-static token_t* _next_token(parse_context_t* context, bool step)
+static token_t* _next_token(context_t* ctx)
 {
-    skip_separators(context);
+    token_t* t;
 
-    token_t* ret = NULL;
-    if (front) {
-        ret = front;
-
-        if (step) {
-            front = NULL;
+    bool done = false;
+    while (!done) {
+        if (*ctx->buffer) {
+            while (is_skip_char(*ctx->buffer)) {
+                ctx->buffer++;
+            }
+            done = true;
         }
 
-        goto found;
-    }
-
-    // parse number
-    if (is_number(context)) {
-        uint64_t value;
-        char* word;
-        if (!parse_value(context, &value, &word)) {
-            return NULL;
+        if (!*ctx->buffer) {
+            if (!ctx->read_line(ctx)) {
+                t = calloc(1, sizeof *t);
+                t->type = TK_EOF;
+                goto found;
+            }
+            done = false;
         }
+    }
 
-        token_number_t* number_token = calloc(1, sizeof(token_number_t));
-        number_token->base.type = TK_NUM;
-        number_token->uint64 = value;
-
-        ret = (token_t*)number_token;
+    if (is_number(*ctx->buffer)) {
+        t = parse_value(ctx);
         goto found;
     }
 
-    if (*context->text == '+') {
-        context->text++;
-        token_opr_t* opr_token = calloc(1, sizeof(token_opr_t));
-        opr_token->base.type = TK_OPR;
-        opr_token->type = OP_PLUS;
-
-        ret = (token_t*)opr_token;
-        debug("token [op] +\n");
-        goto found;
+    switch (*ctx->buffer) {
+        case '=': {
+            ctx->buffer++;
+            if (*ctx->buffer == '=') {
+                t = calloc(1, sizeof(operator_type_t));
+                ctx->buffer++;
+                ((token_opr_t*)t)->base.type = TK_OPR;
+                ((token_opr_t*)t)->type = OP_EQ;
+                goto found;
+            }
+            else {
+                t = calloc(1, sizeof(token_t));
+                t->type = TK_ASSIGN;
+                goto found;
+            }
+        }
+        case '!': {
+            ctx->buffer++;
+            if (*ctx->buffer == '=') {
+                t = calloc(1, sizeof(operator_type_t));
+                ctx->buffer++;
+                ((token_opr_t*)t)->base.type = TK_OPR;
+                ((token_opr_t*)t)->type = OP_NEQ;
+                goto found;
+            }
+            else {
+                t = calloc(1, sizeof(token_t));
+                t->type = TK_NOT;
+                goto found;
+            }
+        }
+        case '+': {
+            ctx->buffer++;
+            t = calloc(1, sizeof(operator_type_t));
+            if (*ctx->buffer == '=') {
+                ctx->buffer++;
+                ((token_opr_t*)t)->base.type = TK_OPR;
+                ((token_opr_t*)t)->type = OP_ADDEQ;
+                goto found;
+            }
+            else {
+                ((token_opr_t*)t)->base.type = TK_OPR;
+                ((token_opr_t*)t)->type = OP_PLUS;
+                goto found;
+            }
+        }
+        case ';': {
+            ctx->buffer++;
+            t = calloc(1, sizeof(token_t));
+            t->type = TK_SEM;
+            goto found;
+        }
     }
 
-    if (*context->text == '-') {
-        context->text++;
-        token_opr_t* opr_token = calloc(1, sizeof(token_opr_t));
-        opr_token->base.type = TK_OPR;
-        opr_token->type = OP_MINUS;
+    err(EXIT_FAILURE, "cannot parse a input that is %s\n", ctx->buffer);
+found:
+    return t;
+}
 
-        ret = (token_t*)opr_token;
-        debug("token [op] -\n");
-        goto found;
+/*
+static lex_err_t _next_token(context_t* ctx, token_t** token)
+{
+    char t[81];
+    char* word = t;
+fill_buffer:
+    while (!*ctx->buffer) {
+        if (!ctx->read_line(ctx->buffer)) {
+            return LEX_EOI;
+        }
     }
 
-    if (*context->text == '*') {
-        context->text++;
-        token_opr_t* opr_token = calloc(1, sizeof(token_opr_t));
-        opr_token->base.type = TK_OPR;
-        opr_token->type = OP_MUL;
-
-        ret = (token_t*)opr_token;
-        goto found;
+    while (is_skip_char(*ctx->buffer)) {
+        ctx->buffer++;
     }
 
-    if (*context->text == '/') {
-        context->text++;
-        token_opr_t* opr_token = calloc(1, sizeof(token_opr_t));
-        opr_token->base.type = TK_OPR;
-        opr_token->type = OP_DIV;
-
-        ret = (token_t*)opr_token;
-        goto found;
+    if (!*ctx->buffer) {
+        goto fill_buffer;
     }
 
-    if (*context->text == ';') {
-        context->text++;
-        token_t* token = calloc(1, sizeof(token_t));
-        token->type = TK_SEM;
-
-        ret = (token_t*)token;
-        goto found;
+    if (is_reserved(*ctx->buffer)) {
+        switch (*ctx->buffer) {
+            case '=':
+            case '!':
+            case '<':
+            case '>': {
+                *word++ = *ctx->buffer++;
+                if (*ctx->buffer == '=') {
+                    *word++ = *ctx->buffer++;
+                }
+                goto found;
+            }
+            case '|': {
+                *word++ = *ctx->buffer++;
+                if (*ctx->buffer == '|') {
+                    *word++ = *ctx->buffer++;
+                }
+                goto found;
+            }
+            case '&': {
+                *word++ = *ctx->buffer++;
+                if (*ctx->buffer == '&') {
+                    *word++ = *ctx->buffer++;
+                }
+                goto found;
+            }
+            case '+': {
+                *word++ = *ctx->buffer++;
+                if (*ctx->buffer == '+') {
+                    *word++ = *ctx->buffer++;
+                }
+                goto found;
+            }
+            case '-': {
+                *word++ = *ctx->buffer++;
+                if (*ctx->buffer == '-') {
+                    *word++ = *ctx->buffer++;
+                }
+                else if (*ctx->buffer == '>') {
+                    *word++ = *ctx->buffer++;
+                }
+                goto found;
+            }
+            default: {
+                *word++ = *ctx->buffer++;
+                goto found;
+            }
+        }
     }
 
-    if (*context->text == '{') {
-        context->text++;
-        token_t* token = calloc(1, sizeof(token_t));
-        token->type = TK_L_PAR;
-
-        ret = (token_t*)token;
-        goto found;
+    if (*ctx->buffer == '"') {
+        while (true) {
+            if (*ctx->buffer == '\\') {
+                *word++ = *ctx->buffer++;
+            }
+            *word++ = *ctx->buffer++;
+            if (*ctx->buffer == '"') {
+                *word++ = *ctx->buffer++;
+                goto found;
+            }
+        }
     }
 
-    if (*context->text == '}') {
-        context->text++;
-        token_t* token = calloc(1, sizeof(token_t));
-        token->type = TK_R_PAR;
-
-        ret = (token_t*)token;
-        goto found;
+    if (*ctx->buffer == '\'') {
+        while (true) {
+            if (*ctx->buffer == '\\') {
+                *word++ = *ctx->buffer++;
+            }
+            *word++ = *ctx->buffer++;
+            if (*ctx->buffer == '\'') {
+                *word++ = *ctx->buffer++;
+                goto found;
+            }
+        }
     }
 
-    // reach to end of line
-    if (*context->text == 0) {
-        token_t* eof_token = calloc(1, sizeof(token_t));
-        eof_token->type = TK_EOF;
-        ret = (token_t*)eof_token;
-        goto found;
+    while (!is_skip_char(*ctx->buffer) || !*ctx->buffer) {
+        if (is_reserved(*ctx->buffer)) {
+            goto found;
+        }
+        *word++ = *ctx->buffer++;
     }
-
-    ret = try_to_parse_reserved(context);
-    if (ret) {
-        goto found;
-    }
-
-    ret = try_to_parse_id(context);
-    if (ret) {
-        goto found;
-    }
-
-    NOT_YET_IMPLEMETED;
-    return NULL;
 
 found:
-    if (!step) {
-        front = ret;
+    *word = '\0';
+
+    return LEX_OK;
+}
+
+token_t* get_next_token(context_t* ctx)
+{
+    token_t *token;
+    lex_err_t result = _next_token(ctx, &token);
+    switch (result) {
+        case LEX_OK:
+        {
+            return token;
+        }
+        case LEX_EOI:
+        {
+            token = calloc(1, sizeof *token);
+            token->type = TK_EOF;
+            return token;
+        }
     }
 
-    debug_print_token(ret);
-
-    return ret;
+    assert("wtf");
 }
+token_t* get_front_token(context_t* ctx);
+*/
 
-token_t* get_next_token(parse_context_t* ctx)
+token_t* get_next_token(context_t* ctx)
 {
-    return _next_token(ctx, true);
-}
+    return _next_token(ctx);
 
-token_t* get_front_token(parse_context_t* ctx)
-{
-    return _next_token(ctx, false);
+    /*
+    token_t* token;
+    lex_err_t result = _next_token(ctx, &token);
+    switch (result) {
+        case LEX_OK: {
+            return token;
+        }
+        case LEX_EOI: {
+            token = calloc(1, sizeof *token);
+            token->type = TK_EOF;
+            return token;
+        }
+    }
+
+    assert("wtf");
+    */
 }

@@ -2,7 +2,7 @@
 #include <cgreen/cgreen.h>
 
 #include "lexer.h"
-#include "parser.h"
+//#include "parser.h"
 
 static token_opr_t plus_token = {
     .base =
@@ -36,6 +36,7 @@ static token_opr_t div_op = {
     .type = OP_DIV,
 };
 
+/*
 static node_t eof_node = {
     .type = NODE_EOF,
 };
@@ -43,7 +44,7 @@ static node_t eof_node = {
 static node_t sem_node = {
     .type = NODE_SEM,
 };
+*/
 
 TestSuite* lexer_tests(void);
-TestSuite* parser_tests(void);
-
+//TestSuite* parser_tests(void);
