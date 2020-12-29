@@ -23,12 +23,9 @@ PARSER_TEST(sem)
     assert_that(parse(ctx), is_equal_to_contents_of(&sem_node, sizeof sem_node));
 }
 
-/*
 PARSER_TEST(num_0)
 {
-    parse_context_t context = {
-        .text = "0;",
-    };
+    PREPARE_CTX("0;")
 
     node_val_t node = {
         .base =
@@ -45,16 +42,17 @@ PARSER_TEST(num_0)
         .uint64 = 0,
     };
 
-    node_t* n = parse(&context);
+    node_t* n = parse(ctx);
     assert_that(n->type, is_equal_to(NODE_VAL));
     assert_that(((node_val_t*)n)->token,
                 is_equal_to_contents_of(&token, sizeof token));
-    n = parse(&context);
+    n = parse(ctx);
     assert_that(n->type , is_equal_to(NODE_SEM));
-    get_next_token(&context);
-    n = parse(&context);
+    get_next_token(ctx);
+    n = parse(ctx);
     assert_that(n, is_equal_to_contents_of(&eof_node, sizeof eof_node));
 }
+/*
 
 PARSER_TEST(op_0)
 {
@@ -224,8 +222,8 @@ TestSuite* parser_tests(void)
     TestSuite* suite = create_test_suite();
 
     PARSER_ADDTEST(null);
-    //PARSER_ADDTEST(sem);
-    //PARSER_ADDTEST(num_0);
+    PARSER_ADDTEST(sem);
+    PARSER_ADDTEST(num_0);
     //PARSER_ADDTEST(op_0);
     //PARSER_ADDTEST(op_1);
     //PARSER_ADDTEST(op_2);
