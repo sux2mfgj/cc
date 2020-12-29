@@ -17,10 +17,10 @@ PARSER_TEST(null)
 
 PARSER_TEST(sem)
 {
-
     PREPARE_CTX(";");
 
-    assert_that(parse(ctx), is_equal_to_contents_of(&sem_node, sizeof sem_node));
+    assert_that(parse(ctx),
+                is_equal_to_contents_of(&sem_node, sizeof sem_node));
 }
 
 PARSER_TEST(num_0)
@@ -47,7 +47,7 @@ PARSER_TEST(num_0)
     assert_that(((node_val_t*)n)->token,
                 is_equal_to_contents_of(&token, sizeof token));
     n = parse(ctx);
-    assert_that(n->type , is_equal_to(NODE_SEM));
+    assert_that(n->type, is_equal_to(NODE_SEM));
     get_next_token(ctx);
     n = parse(ctx);
     assert_that(n, is_equal_to_contents_of(&eof_node, sizeof eof_node));
@@ -99,7 +99,8 @@ PARSER_TEST(op_1)
     assert_that(n1->type, is_equal_to(NODE_OP));
     node_op_t* n1_op = (node_op_t*)n1;
 
-    assert_that(n1_op->token, is_equal_to_contents_of(&minus_op, sizeof minus_op));
+    assert_that(n1_op->token,
+                is_equal_to_contents_of(&minus_op, sizeof minus_op));
     assert_that(n1_op->left, is_non_null);
     assert_that(n1_op->left->type, is_equal_to(NODE_VAL));
 
@@ -117,18 +118,21 @@ PARSER_TEST(op_2)
 
     node_op_t* no_op = (node_op_t*)n1;
 
-    assert_that(no_op->token, is_equal_to_contents_of(&minus_op, sizeof minus_op));
+    assert_that(no_op->token,
+                is_equal_to_contents_of(&minus_op, sizeof minus_op));
 
     assert_that(no_op->left, is_non_null);
     assert_that(no_op->left->type, is_equal_to(NODE_OP));
 
     node_op_t* left_op = (node_op_t*)no_op->left;
-    assert_that(left_op->token, is_equal_to_contents_of(&mul_op, sizeof mul_op));
+    assert_that(left_op->token,
+                is_equal_to_contents_of(&mul_op, sizeof mul_op));
 
     assert_that(no_op->right, is_non_null);
     assert_that(no_op->right->type, is_equal_to(NODE_OP));
     node_op_t* right_op = (node_op_t*)no_op->right;
-    assert_that(right_op->token, is_equal_to_contents_of(&div_op, sizeof div_op));
+    assert_that(right_op->token,
+                is_equal_to_contents_of(&div_op, sizeof div_op));
 }
 
 PARSER_TEST(parentheses_0)
@@ -136,12 +140,13 @@ PARSER_TEST(parentheses_0)
     PREPARE_CTX("{}");
 
     node_t* n1 = parse(ctx);
-    assert_that (n1, is_non_null);
-    assert_that (n1->type, is_equal_to(NODE_PAR));
+    assert_that(n1, is_non_null);
+    assert_that(n1->type, is_equal_to(NODE_PAR));
 
     node_par_t* np = (node_par_t*)n1;
-    assert_that (np->contents, is_null);
-    assert_that (parse(ctx), is_equal_to_contents_of(&eof_node, sizeof eof_node));
+    assert_that(np->contents, is_null);
+    assert_that(parse(ctx),
+                is_equal_to_contents_of(&eof_node, sizeof eof_node));
 }
 
 PARSER_TEST(parentheses_1)
@@ -149,12 +154,12 @@ PARSER_TEST(parentheses_1)
     PREPARE_CTX("{1 + 2;}");
 
     node_t* n1 = parse(ctx);
-    assert_that (n1, is_non_null);
-    assert_that (n1->type, is_equal_to(NODE_PAR));
+    assert_that(n1, is_non_null);
+    assert_that(n1->type, is_equal_to(NODE_PAR));
 
     node_par_t* np = (node_par_t*)n1;
-    assert_that (np->contents, is_non_null);
-    assert_that (np->contents->type, is_equal_to(NODE_OP));
+    assert_that(np->contents, is_non_null);
+    assert_that(np->contents->type, is_equal_to(NODE_OP));
 
     token_number_t token_1 = {
         .base =
@@ -164,11 +169,12 @@ PARSER_TEST(parentheses_1)
         .uint64 = 1,
     };
 
-    node_op_t *op = (node_op_t*)np->contents;
-    assert_that (op->left->type, is_equal_to(NODE_VAL));
-    assert_that (op->right->type, is_equal_to(NODE_VAL));
-    assert_that (op->base.next, is_null);
-    assert_that (parse(ctx), is_equal_to_contents_of(&eof_node, sizeof eof_node));
+    node_op_t* op = (node_op_t*)np->contents;
+    assert_that(op->left->type, is_equal_to(NODE_VAL));
+    assert_that(op->right->type, is_equal_to(NODE_VAL));
+    assert_that(op->base.next, is_null);
+    assert_that(parse(ctx),
+                is_equal_to_contents_of(&eof_node, sizeof eof_node));
 }
 
 PARSER_TEST(uint64_t)
@@ -176,29 +182,38 @@ PARSER_TEST(uint64_t)
     PREPARE_CTX("uint64_t a;");
 
     node_t* n = parse(ctx);
-    assert_that (n, is_non_null);
-    assert_that (n->type, is_equal_to(NODE_DEF_VAL));
+    assert_that(n, is_non_null);
+    assert_that(n->type, is_equal_to(NODE_DEF_VAL));
     node_def_val_t* def = (node_def_val_t*)n;
-    assert_that (def->type, is_equal_to(TYPE_UINT64));
-    assert_that (def->id, is_equal_to_contents_of("a", strlen("a") + 1));
-    assert_that (def->init, is_null);
+    assert_that(def->type, is_equal_to(TYPE_UINT64));
+    assert_that(def->id, is_equal_to_contents_of("a", strlen("a") + 1));
+    assert_that(def->init, is_null);
 
-    assert_that (parse(ctx), is_equal_to_contents_of(&eof_node, sizeof eof_node));
+    assert_that(parse(ctx),
+                is_equal_to_contents_of(&sem_node, sizeof sem_node));
 }
 
 PARSER_TEST(multi_node)
 {
     PREPARE_CTX(
-            "{"
-            "   uint64_t a;"
-            "}");
+        "{"
+        "   uint64_t a;"
+        "}");
 
     node_t* n = parse(ctx);
-    assert_that (n, is_non_null);
-    assert_that (n->type, is_equal_to(NODE_PAR));
+    assert_that(n, is_non_null);
+    assert_that(n->type, is_equal_to(NODE_PAR));
 
     node_par_t* par = (node_par_t*)n;
-    assert_that (par->contents, is_non_null);
+    assert_that(par->contents, is_non_null);
+
+    node_t* con = par->contents;
+    assert_that(con->type, is_equal_to(NODE_DEF_VAL));
+    assert_that(con->next, is_null);
+
+    assert_that(parse(ctx),
+                is_equal_to_contents_of(&eof_node, sizeof eof_node));
+}
 
 TestSuite* parser_tests(void)
 {

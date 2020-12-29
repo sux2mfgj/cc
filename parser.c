@@ -116,13 +116,14 @@ static node_t* parse_def_val(context_t* ctx, token_ctype_t* ctype)
 
     node->id = ((token_id_t*)id_token)->id;
 
-    token_t* next = get_next_token(ctx);
+    token_t* next = get_front_token(ctx);
     if(next->type == TK_SEM)
     {
         return (node_t*)node;
     }
 
     NOT_YET_IMPLEMETED;
+    next = get_next_token(ctx);
     if(next->type == TK_ASSIGN)
     {
         //TODO

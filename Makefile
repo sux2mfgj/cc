@@ -1,8 +1,8 @@
 CC	:= clang
 CFLAGS	:= -Wall -g3
 
-module	:= context.c lexer.c parser.c #ir.c debug.c
-headers := context.h lexer.h parser.h #ir.h
+module	:= context.c lexer.c parser.c ir.c debug.c
+headers := context.h lexer.h parser.h ir.h
 src	:= main.c $(module)
 obj	:= $(src:.c=.o)
 bin	:= uopcc
