@@ -52,13 +52,10 @@ PARSER_TEST(num_0)
     n = parse(ctx);
     assert_that(n, is_equal_to_contents_of(&eof_node, sizeof eof_node));
 }
-/*
 
 PARSER_TEST(op_0)
 {
-    parse_context_t context = {
-        .text = "1 + 12;",
-    };
+    PREPARE_CTX("1 + 12;");
 
     token_number_t token_1 = {
         .base =
@@ -83,7 +80,7 @@ PARSER_TEST(op_0)
         .uint64 = 12,
     };
 
-    node_t* result = parse(&context);
+    node_t* result = parse(ctx);
     assert_that(result, is_non_null);
     assert_that(result->type, is_equal_to(NODE_OP));
     node_op_t* op_node = (node_op_t*)result;
@@ -92,6 +89,7 @@ PARSER_TEST(op_0)
     assert_that(op_node->right, is_non_null);
     // TODO check the values
 }
+/*
 
 PARSER_TEST(op_1)
 {
@@ -224,7 +222,7 @@ TestSuite* parser_tests(void)
     PARSER_ADDTEST(null);
     PARSER_ADDTEST(sem);
     PARSER_ADDTEST(num_0);
-    //PARSER_ADDTEST(op_0);
+    PARSER_ADDTEST(op_0);
     //PARSER_ADDTEST(op_1);
     //PARSER_ADDTEST(op_2);
     //PARSER_ADDTEST(parentheses_0);
