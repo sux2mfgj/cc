@@ -230,6 +230,15 @@ LEXER_TEST(multi_node)
     assert_that(t->type, is_equal_to(TK_R_PAR));
 }
 
+LEXER_TEST(return_0)
+{
+    PREPARE_CTX("return 1;");
+
+    token_t* t = get_next_token(ctx);
+    assert_that(t, is_non_null);
+    assert_that(t->type, is_equal_to(TK_RET));
+}
+
 TestSuite* lexer_tests()
 {
     TestSuite* suite = create_test_suite();
@@ -244,6 +253,7 @@ TestSuite* lexer_tests()
     LEXER_ADDTEST(uint64_t_0);
     LEXER_ADDTEST(uint64_t_1);
     LEXER_ADDTEST(multi_node);
+    LEXER_ADDTEST(return_0);
 
     return suite;
 }

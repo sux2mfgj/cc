@@ -133,6 +133,15 @@ static token_t* try_to_parse_reserved(context_t* ctx)
 
         return (token_t*)t;
     }
+
+    if (!strncmp(ctx->buffer, "return", sizeof "return" - 1)) {
+        token_t* t = calloc(1, sizeof(token_t));
+        t->type = TK_RET;
+
+        ctx->buffer += sizeof "return" - 1;
+
+        return t;
+    }
     // TODO add other words
 
     return NULL;
