@@ -121,6 +121,20 @@ static token_t* parse_value(context_t* ctx)
     return (token_t*)t;
 }
 
+static token_t* try_to_parse_reserved(context_t* ctx)
+{
+    if (!strncmp(ctx->buffer, "uint64_t", sizeof "uint64_t")) {
+        token_ctype_t* t = calloc(1, sizeof(token_ctype_t));
+        t->base.type = TK_TYPE;
+        t->type = TYPE_UINT64;
+
+        return (token_t*)t;
+    }
+    // TODO add other words
+
+    return NULL;
+}
+
 static token_t* _next_token(context_t* ctx)
 {
     token_t* t;
@@ -146,6 +160,11 @@ static token_t* _next_token(context_t* ctx)
 
     if (is_number(*ctx->buffer)) {
         t = parse_value(ctx);
+        goto found;
+    }
+
+    t = try_to_parse_reserved(ctx);
+    if (t) {
         goto found;
     }
 
@@ -354,21 +373,18 @@ token_t* get_front_token(context_t* ctx);
 static token_t* front = NULL;
 token_t* get_next_token(context_t* ctx)
 {
-    if (front)
-    {
+    if (front) {
         token_t* ret = front;
         front = NULL;
         return ret;
     }
 
     return _next_token(ctx);
-
 }
 
 token_t* get_front_token(context_t* ctx)
 {
-    if (!front)
-    {
+    if (!front) {
         front = _next_token(ctx);
     }
 

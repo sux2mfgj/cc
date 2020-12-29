@@ -140,9 +140,7 @@ LEXER_TEST(front_0)
 
 LEXER_TEST(uint64_t_0)
 {
-    parse_context_t ctx ={
-        .text = "uint64_t",
-    };
+    PREPARE_CTX("uint64_t");
 
     token_ctype_t t = {
         .base = {
@@ -151,7 +149,8 @@ LEXER_TEST(uint64_t_0)
         .type = TYPE_UINT64,
     };
 
-    assert_that(get_next_token(&ctx), is_equal_to_contents_of(&t, sizeof t));
+    token_t *tt = get_next_token(ctx);
+    assert_that(tt, is_equal_to_contents_of(&t, sizeof t));
 }
 /*
 
