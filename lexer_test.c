@@ -152,13 +152,10 @@ LEXER_TEST(uint64_t_0)
     token_t *tt = get_next_token(ctx);
     assert_that(tt, is_equal_to_contents_of(&t, sizeof t));
 }
-/*
 
 LEXER_TEST(uint64_t_1)
 {
-    parse_context_t ctx ={
-        .text = "uint64_t a;",
-    };
+    PREPARE_CTX("uint64_t a;");
 
     token_ctype_t def_token = {
         .base = {
@@ -185,6 +182,7 @@ LEXER_TEST(uint64_t_1)
     assert_that (id->id, is_equal_to_contents_of("a", strlen("a") + 1));
     //TODO
 }
+/*
 
 LEXER_TEST(multi_node)
 {
@@ -230,7 +228,7 @@ TestSuite* lexer_tests()
     LEXER_ADDTEST(parentheses_0);
     LEXER_ADDTEST(front_0);
     LEXER_ADDTEST(uint64_t_0);
-    // LEXER_ADDTEST(uint64_t_1);
+    LEXER_ADDTEST(uint64_t_1);
     // LEXER_ADDTEST(multi_node);
 
     return suite;
