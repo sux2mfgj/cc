@@ -13,6 +13,20 @@ static token_t l_t = {
 static token_t r_t = {
     .type = TK_R_PAR,
 };
+static token_number_t num_1_token = {
+    .base =
+    {
+        .type = TK_NUM,
+    },
+    .uint64 = 1,
+};
+static token_number_t num_2_token = {
+    .base =
+    {
+        .type = TK_NUM,
+    },
+    .uint64 = 2,
+};
 
 #define LEXER_TEST(name) Ensure(lexer_##name)
 #define LEXER_ADDTEST(name) add_test(suite, lexer_##name)
@@ -64,13 +78,7 @@ LEXER_TEST(op_0)
 {
     PREPARE_CTX("1 + 1;");
 
-    token_number_t num_1_token = {
-        .base =
-            {
-                .type = TK_NUM,
-            },
-        .uint64 = 1,
-    };
+
 
     token_t* t = get_next_token(ctx);
     assert_that(t, is_equal_to_contents_of(&num_1_token, sizeof num_1_token));
@@ -83,6 +91,23 @@ LEXER_TEST(op_0)
     t = get_next_token(ctx);
     assert_that(t, is_equal_to_contents_of(&eof_token, sizeof eof_token));
 }
+
+LEXER_TEST(op_1)
+{
+    PREPARE_CTX("1 - 2;");
+
+    token_t* t = get_next_token(ctx);
+    assert_that(t, is_equal_to_contents_of(&num_1_token, sizeof num_1_token));
+    t = get_next_token(ctx);
+    assert_that(t, is_equal_to_contents_of(&minus_op, sizeof minus_op));
+    t = get_next_token(ctx);
+    assert_that(t, is_equal_to_contents_of(&num_2_token, sizeof num_2_token));
+    t = get_next_token(ctx);
+    assert_that(t, is_equal_to_contents_of(&sem_token, sizeof sem_token));
+    t = get_next_token(ctx);
+    assert_that(t, is_equal_to_contents_of(&eof_token, sizeof eof_token));
+}
+
 
 LEXER_TEST(parentheses_0)
 {
@@ -213,6 +238,7 @@ TestSuite* lexer_tests()
     LEXER_ADDTEST(sem_null);
     LEXER_ADDTEST(number_0);
     LEXER_ADDTEST(op_0);
+    LEXER_ADDTEST(op_1);
     LEXER_ADDTEST(parentheses_0);
     LEXER_ADDTEST(front_0);
     LEXER_ADDTEST(uint64_t_0);

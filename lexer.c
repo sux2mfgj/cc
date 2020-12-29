@@ -147,6 +147,7 @@ static bool is_reserved(context_t* ctx)
         case ';':
         case '{':
         case '}':
+        //TODO
             return true;
     }
 
@@ -246,6 +247,22 @@ static token_t* _next_token(context_t* ctx)
             else {
                 ((token_opr_t*)t)->base.type = TK_OPR;
                 ((token_opr_t*)t)->type = OP_PLUS;
+                goto found;
+            }
+        }
+        case '-' : {
+            ctx->buffer++;
+            t = calloc(1, sizeof (operator_type_t));
+            if(*ctx->buffer == '=') {
+                ctx->buffer++;
+                ((token_opr_t*)t)->base.type = TK_OPR;
+                ((token_opr_t*)t)->type = OP_MINEQ;
+                goto found;
+            }
+            else
+            {
+                ((token_opr_t*)t)->base.type = TK_OPR;
+                ((token_opr_t*)t)->type = OP_MINUS;
                 goto found;
             }
         }
