@@ -89,15 +89,12 @@ PARSER_TEST(op_0)
     assert_that(op_node->right, is_non_null);
     // TODO check the values
 }
-/*
 
 PARSER_TEST(op_1)
 {
-    parse_context_t context = {
-        .text = "1 - 2 * 3;",
-    };
+    PREPARE_CTX("1 - 2 * 3;");
 
-    node_t* n1 = parse(&context);
+    node_t* n1 = parse(ctx);
     assert_that(n1, is_non_null);
     assert_that(n1->type, is_equal_to(NODE_OP));
     node_op_t* n1_op = (node_op_t*)n1;
@@ -109,6 +106,7 @@ PARSER_TEST(op_1)
     assert_that(n1_op->right, is_non_null);
     // TODO
 }
+/*
 
 PARSER_TEST(op_2)
 {
@@ -223,7 +221,7 @@ TestSuite* parser_tests(void)
     PARSER_ADDTEST(sem);
     PARSER_ADDTEST(num_0);
     PARSER_ADDTEST(op_0);
-    //PARSER_ADDTEST(op_1);
+    PARSER_ADDTEST(op_1);
     //PARSER_ADDTEST(op_2);
     //PARSER_ADDTEST(parentheses_0);
     //PARSER_ADDTEST(parentheses_1);

@@ -30,7 +30,7 @@ typedef struct {
     };
 } token_number_t;
 
-typedef enum { OP_PLUS, OP_MINUS, OP_MUL, OP_DIV, OP_EQ, OP_NEQ, OP_ADDEQ, OP_MINEQ } operator_type_t;
+typedef enum { OP_PLUS, OP_MINUS, OP_MUL, OP_DIV, OP_EQ, OP_NEQ, OP_ADDEQ, OP_MINEQ, OP_MULEQ } operator_type_t;
 
 typedef struct {
     token_t base;

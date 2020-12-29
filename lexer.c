@@ -266,6 +266,21 @@ static token_t* _next_token(context_t* ctx)
                 goto found;
             }
         }
+        case '*' : {
+            ctx->buffer++;
+            t = calloc(1, sizeof (operator_type_t));
+            if(*ctx->buffer == '=') {
+                ctx->buffer++;
+                ((token_opr_t*)t)->base.type = TK_OPR;
+                ((token_opr_t*)t)->type = OP_MULEQ;
+            }
+            else
+            {
+                ((token_opr_t*)t)->base.type = TK_OPR;
+                ((token_opr_t*)t)->type = OP_MUL;
+                goto found;
+            }
+        }
         case ';': {
             ctx->buffer++;
             t = calloc(1, sizeof(token_t));
