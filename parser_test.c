@@ -143,15 +143,12 @@ PARSER_TEST(parentheses_0)
     assert_that (np->contents, is_null);
     assert_that (parse(ctx), is_equal_to_contents_of(&eof_node, sizeof eof_node));
 }
-/*
 
 PARSER_TEST(parentheses_1)
 {
-    parse_context_t context = {
-        .text = "{1 + 2;}",
-    };
+    PREPARE_CTX("{1 + 2;}");
 
-    node_t* n1 = parse(&context);
+    node_t* n1 = parse(ctx);
     assert_that (n1, is_non_null);
     assert_that (n1->type, is_equal_to(NODE_PAR));
 
@@ -171,9 +168,10 @@ PARSER_TEST(parentheses_1)
     assert_that (op->left->type, is_equal_to(NODE_VAL));
     assert_that (op->right->type, is_equal_to(NODE_VAL));
     assert_that (op->base.next, is_null);
-    assert_that (parse(&context), is_equal_to_contents_of(&eof_node, sizeof eof_node));
+    assert_that (parse(ctx), is_equal_to_contents_of(&eof_node, sizeof eof_node));
 }
 
+/*
 PARSER_TEST(uint64_t)
 {
     parse_context_t context = {
@@ -219,8 +217,8 @@ TestSuite* parser_tests(void)
     PARSER_ADDTEST(op_0);
     PARSER_ADDTEST(op_1);
     PARSER_ADDTEST(op_2);
-    //PARSER_ADDTEST(parentheses_0);
-    //PARSER_ADDTEST(parentheses_1);
+    PARSER_ADDTEST(parentheses_0);
+    PARSER_ADDTEST(parentheses_1);
     //PARSER_ADDTEST(uint64_t);
     //PARSER_ADDTEST(multi_node);
 
