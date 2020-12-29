@@ -182,26 +182,23 @@ LEXER_TEST(uint64_t_1)
     assert_that (id->id, is_equal_to_contents_of("a", strlen("a") + 1));
     //TODO
 }
-/*
 
 LEXER_TEST(multi_node)
 {
-    parse_context_t ctx = {
-        .text =
-            "{"
+    PREPARE_CTX(
+            "{}"
             "   uint64_t a;"
-            "}",
-    };
+            "}");
 
-    token_t *t = get_next_token(&ctx);
+    token_t *t = get_next_token(ctx);
     assert_that(t, is_non_null);
     assert_that(t->type, is_equal_to(TK_L_PAR));
 
-    t = get_next_token(&ctx);
+    t = get_next_token(ctx);
     assert_that(t, is_non_null);
     assert_that(t->type, is_equal_to(TK_TYPE));
 
-    t = get_next_token(&ctx);
+    t = get_next_token(ctx);
     assert_that(t, is_non_null);
     assert_that(t->type, is_equal_to(TK_ID));
 
@@ -215,7 +212,6 @@ LEXER_TEST(multi_node)
     assert_that(t, is_non_null);
     assert_that(t->type, is_equal_to(TK_R_PAR));
 }
-*/
 
 TestSuite* lexer_tests()
 {
@@ -229,7 +225,7 @@ TestSuite* lexer_tests()
     LEXER_ADDTEST(front_0);
     LEXER_ADDTEST(uint64_t_0);
     LEXER_ADDTEST(uint64_t_1);
-    // LEXER_ADDTEST(multi_node);
+    LEXER_ADDTEST(multi_node);
 
     return suite;
 }
