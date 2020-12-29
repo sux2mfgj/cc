@@ -92,29 +92,24 @@ LEXER_TEST(op_0)
     assert_that(t, is_equal_to_contents_of(&eof_token, sizeof eof_token));
 }
 
-/*
 LEXER_TEST(parentheses_0)
 {
-    parse_context_t context = {
-        .text = "{}",
-    };
-
-    assert_that(get_next_token(&context),
-                is_equal_to_contents_of(&l_t, sizeof l_t));
-    assert_that(get_next_token(&context),
-                is_equal_to_contents_of(&r_t, sizeof r_t));
+    PREPARE_CTX("{}");
+    token_t* t = get_next_token(ctx);
+    assert_that(t, is_equal_to_contents_of(&l_t, sizeof l_t));
+    t = get_next_token(ctx);
+    assert_that(t, is_equal_to_contents_of(&r_t, sizeof r_t));
 }
 
 LEXER_TEST(front_0)
 {
-    parse_context_t ctx = {
-        .text = "{1 + 2;}",
-    };
+    PREPARE_CTX("{1 + 2;}");
 
-    assert_that(get_front_token(&ctx),
-                is_equal_to_contents_of(&l_t, sizeof l_t));
-    assert_that(get_next_token(&ctx),
-                is_equal_to_contents_of(&l_t, sizeof l_t));
+    token_t* t;
+    t = get_front_token(ctx);
+    assert_that(t, is_equal_to_contents_of(&l_t, sizeof l_t));
+    t = get_next_token(ctx);
+    assert_that(t, is_equal_to_contents_of(&l_t, sizeof l_t));
 
     token_number_t num_1_token = {
         .base =
@@ -132,16 +127,17 @@ LEXER_TEST(front_0)
         .uint64 = 2,
     };
 
-    assert_that(get_next_token(&ctx),
-                is_equal_to_contents_of(&num_1_token, sizeof num_1_token));
-    assert_that(get_next_token(&ctx),
-                is_equal_to_contents_of(&plus_token, sizeof plus_token));
-    assert_that(get_front_token(&ctx),
-                is_equal_to_contents_of(&num_2_token, sizeof num_2_token));
-    assert_that(get_next_token(&ctx),
-                is_equal_to_contents_of(&num_2_token, sizeof num_2_token));
+    t = get_next_token(ctx);
+    assert_that(t, is_equal_to_contents_of(&num_1_token, sizeof num_1_token));
+    t = get_next_token(ctx);
+    assert_that(t, is_equal_to_contents_of(&plus_token, sizeof plus_token));
+    t = get_front_token(ctx);
+    assert_that(t, is_equal_to_contents_of(&num_2_token, sizeof num_2_token));
+    t = get_next_token(ctx);
+    assert_that(t, is_equal_to_contents_of(&num_2_token, sizeof num_2_token));
     //TODO
 }
+/*
 
 LEXER_TEST(uint64_t_0)
 {
@@ -232,7 +228,8 @@ TestSuite* lexer_tests()
     LEXER_ADDTEST(sem_null);
     LEXER_ADDTEST(number_0);
     LEXER_ADDTEST(op_0);
-    // LEXER_ADDTEST(parentheses_0);
+    LEXER_ADDTEST(parentheses_0);
+    LEXER_ADDTEST(front_0);
     // LEXER_ADDTEST(uint64_t_0);
     // LEXER_ADDTEST(uint64_t_1);
     // LEXER_ADDTEST(multi_node);

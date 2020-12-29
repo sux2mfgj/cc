@@ -201,6 +201,18 @@ static token_t* _next_token(context_t* ctx)
             t->type = TK_SEM;
             goto found;
         }
+        case '{': {
+            ctx->buffer++;
+            t = calloc(1, sizeof(token_t));
+            t->type = TK_L_PAR;
+            goto found;
+        }
+        case '}': {
+            ctx->buffer++;
+            t = calloc(1, sizeof(token_t));
+            t->type = TK_R_PAR;
+            goto found;
+        }
     }
 
     err(EXIT_FAILURE, "cannot parse a input that is %s\n", ctx->buffer);
@@ -339,24 +351,26 @@ token_t* get_next_token(context_t* ctx)
 token_t* get_front_token(context_t* ctx);
 */
 
+static token_t* front = NULL;
 token_t* get_next_token(context_t* ctx)
 {
-    return _next_token(ctx);
-
-    /*
-    token_t* token;
-    lex_err_t result = _next_token(ctx, &token);
-    switch (result) {
-        case LEX_OK: {
-            return token;
-        }
-        case LEX_EOI: {
-            token = calloc(1, sizeof *token);
-            token->type = TK_EOF;
-            return token;
-        }
+    if (front)
+    {
+        token_t* ret = front;
+        front = NULL;
+        return ret;
     }
 
-    assert("wtf");
-    */
+    return _next_token(ctx);
+
+}
+
+token_t* get_front_token(context_t* ctx)
+{
+    if (!front)
+    {
+        front = _next_token(ctx);
+    }
+
+    return front;
 }
