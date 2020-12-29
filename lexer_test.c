@@ -171,12 +171,12 @@ LEXER_TEST(uint64_t_1)
         .id = "a",
     };
 
-    token_t *t = get_next_token(&ctx);
+    token_t *t = get_next_token(ctx);
     assert_that(t->type, is_equal_to(TK_TYPE));
     token_ctype_t *ctype = (token_ctype_t*)t;
     assert_that(ctype->type, is_equal_to(TYPE_UINT64));
 
-    t = get_next_token(&ctx);
+    t = get_next_token(ctx);
     assert_that (t->type, is_equal_to(TK_ID));
     token_id_t* id = (token_id_t*)t;
     assert_that (id->id, is_equal_to_contents_of("a", strlen("a") + 1));

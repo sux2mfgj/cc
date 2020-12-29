@@ -5,6 +5,7 @@
 #include <stdbool.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdio.h>
 #include "debug.h"
 #include "util.h"
 
@@ -123,16 +124,50 @@ static token_t* parse_value(context_t* ctx)
 
 static token_t* try_to_parse_reserved(context_t* ctx)
 {
-    if (!strncmp(ctx->buffer, "uint64_t", sizeof "uint64_t")) {
+    if (!strncmp(ctx->buffer, "uint64_t", sizeof "uint64_t" - 1)) {
         token_ctype_t* t = calloc(1, sizeof(token_ctype_t));
         t->base.type = TK_TYPE;
         t->type = TYPE_UINT64;
+
+        ctx->buffer += sizeof "uint64_t" - 1;
 
         return (token_t*)t;
     }
     // TODO add other words
 
     return NULL;
+}
+
+static bool is_reserved(context_t* ctx)
+{
+    switch (*ctx->buffer) {
+        case '=':
+        case '!':
+        case '+':
+        case ';':
+        case '{':
+        case '}':
+            return true;
+    }
+
+    return false;
+}
+
+static token_t* parse_id(context_t* ctx)
+{
+    char* start = ctx->buffer;
+    int len = 0;
+    while (!is_skip_char(*ctx->buffer) && *ctx->buffer && !is_reserved(ctx)) {
+        ctx->buffer++;
+        len++;
+    }
+
+    token_id_t* t = calloc(1, sizeof(token_id_t));
+    t->base.type = TK_ID;
+    t->id = calloc(len + 1, sizeof(char));
+    memcpy(t->id, start, len);
+
+    return (token_t*)t;
 }
 
 static token_t* _next_token(context_t* ctx)
@@ -232,6 +267,11 @@ static token_t* _next_token(context_t* ctx)
             t->type = TK_R_PAR;
             goto found;
         }
+    }
+
+    t = parse_id(ctx);
+    if (t) {
+        goto found;
     }
 
     err(EXIT_FAILURE, "cannot parse a input that is %s\n", ctx->buffer);
