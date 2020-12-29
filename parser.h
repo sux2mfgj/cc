@@ -11,6 +11,7 @@ typedef enum {
     NODE_DEF_VAL,
     NODE_R_PAR,
     NODE_SEM,
+    NODE_RET,
 } node_type_t;
 
 typedef struct _node_t {
@@ -42,5 +43,10 @@ typedef struct {
     char* id;
     node_t *init;
 } node_def_val_t;
+
+typedef struct {
+    node_t base;
+    node_t* regexp;
+} node_ret_t;
 
 node_t* parse(context_t* ctx);

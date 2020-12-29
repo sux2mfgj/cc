@@ -215,6 +215,37 @@ PARSER_TEST(multi_node)
                 is_equal_to_contents_of(&eof_node, sizeof eof_node));
 }
 
+PARSER_TEST(return_0)
+{
+    PREPARE_CTX("return;");
+    node_t* n = parse(ctx);
+    assert_that(n, is_non_null);
+
+    assert_that(n->type, is_equal_to(NODE_RET));
+    assert_that(((node_ret_t*)n)->regexp, is_null);
+
+    n = parse(ctx);
+    assert_that(n, is_non_null);
+    assert_that(n->type, is_equal_to(NODE_EOF));
+}
+
+PARSER_TEST(return_1)
+{
+    PREPARE_CTX("return 10;");
+    node_t* n = parse(ctx);
+    assert_that(n, is_non_null);
+
+    assert_that(n->type, is_equal_to(NODE_RET));
+    assert_that(((node_ret_t*)n)->regexp, is_non_null);
+    n = ((node_ret_t*)n)->regexp;
+    assert_that(n->type, is_equal_to(NODE_VAL));
+    assert_that(((node_val_t*)n)->token->uint64, is_equal_to(10));
+
+    n = parse(ctx);
+    assert_that(n, is_non_null);
+    assert_that(n->type, is_equal_to(NODE_EOF));
+}
+
 TestSuite* parser_tests(void)
 {
     TestSuite* suite = create_test_suite();
@@ -229,6 +260,8 @@ TestSuite* parser_tests(void)
     PARSER_ADDTEST(parentheses_1);
     PARSER_ADDTEST(uint64_t);
     PARSER_ADDTEST(multi_node);
+    PARSER_ADDTEST(return_0);
+    PARSER_ADDTEST(return_1);
 
     return suite;
 }

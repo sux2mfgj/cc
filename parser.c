@@ -139,6 +139,27 @@ static node_t* parse_def_val(context_t* ctx, token_ctype_t* ctype)
     return (node_t*)node;
 }
 
+static node_t* parse_ret(context_t* ctx)
+{
+    token_t* t = get_front_token(ctx);
+
+    node_ret_t* ret = calloc(1, sizeof(node_ret_t));
+    ret->base.type = NODE_RET;
+
+    if (t->type == TK_SEM) {
+        ret->regexp = NULL;
+    }
+    else {
+        ret->regexp = parse(ctx);
+    }
+
+    if (!skip_semicolon(ctx)) {
+        assert("wtf");
+    }
+
+    return ret;
+}
+
 static node_t* _parse(context_t* ctx, node_t* node)
 {
     token_t* t1 = get_front_token(ctx);
@@ -171,6 +192,10 @@ static node_t* _parse(context_t* ctx, node_t* node)
     }
     else if (t1->type == TK_TYPE) {
         return parse_def_val(ctx, (token_ctype_t*)get_next_token(ctx));
+    }
+    else if (t1->type == TK_RET) {
+        get_next_token(ctx);
+        return parse_ret(ctx);
     }
     else {
         NOT_YET_IMPLEMETED;
