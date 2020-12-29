@@ -106,15 +106,12 @@ PARSER_TEST(op_1)
     assert_that(n1_op->right, is_non_null);
     // TODO
 }
-/*
 
 PARSER_TEST(op_2)
 {
-    parse_context_t context = {
-        .text = "1 * 2 - 3 / 4;",
-    };
+    PREPARE_CTX("1 * 2 - 3 / 4;");
 
-    node_t* n1 = parse(&context);
+    node_t* n1 = parse(ctx);
     assert_that(n1, is_non_null);
     assert_that(n1->type, is_equal_to(NODE_OP));
 
@@ -133,6 +130,7 @@ PARSER_TEST(op_2)
     node_op_t* right_op = (node_op_t*)no_op->right;
     assert_that(right_op->token, is_equal_to_contents_of(&div_op, sizeof div_op));
 }
+/*
 
 PARSER_TEST(parentheses_0)
 {
@@ -222,7 +220,7 @@ TestSuite* parser_tests(void)
     PARSER_ADDTEST(num_0);
     PARSER_ADDTEST(op_0);
     PARSER_ADDTEST(op_1);
-    //PARSER_ADDTEST(op_2);
+    PARSER_ADDTEST(op_2);
     //PARSER_ADDTEST(parentheses_0);
     //PARSER_ADDTEST(parentheses_1);
     //PARSER_ADDTEST(uint64_t);

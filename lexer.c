@@ -3,9 +3,9 @@
 #include <err.h>
 #include <errno.h>
 #include <stdbool.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <stdio.h>
 #include "debug.h"
 #include "util.h"
 
@@ -147,7 +147,7 @@ static bool is_reserved(context_t* ctx)
         case ';':
         case '{':
         case '}':
-        //TODO
+            // TODO
             return true;
     }
 
@@ -250,34 +250,46 @@ static token_t* _next_token(context_t* ctx)
                 goto found;
             }
         }
-        case '-' : {
+        case '-': {
             ctx->buffer++;
-            t = calloc(1, sizeof (operator_type_t));
-            if(*ctx->buffer == '=') {
+            t = calloc(1, sizeof(operator_type_t));
+            if (*ctx->buffer == '=') {
                 ctx->buffer++;
                 ((token_opr_t*)t)->base.type = TK_OPR;
                 ((token_opr_t*)t)->type = OP_MINEQ;
                 goto found;
             }
-            else
-            {
+            else {
                 ((token_opr_t*)t)->base.type = TK_OPR;
                 ((token_opr_t*)t)->type = OP_MINUS;
                 goto found;
             }
         }
-        case '*' : {
+        case '*': {
             ctx->buffer++;
-            t = calloc(1, sizeof (operator_type_t));
-            if(*ctx->buffer == '=') {
+            t = calloc(1, sizeof(operator_type_t));
+            if (*ctx->buffer == '=') {
                 ctx->buffer++;
                 ((token_opr_t*)t)->base.type = TK_OPR;
                 ((token_opr_t*)t)->type = OP_MULEQ;
             }
-            else
-            {
+            else {
                 ((token_opr_t*)t)->base.type = TK_OPR;
                 ((token_opr_t*)t)->type = OP_MUL;
+                goto found;
+            }
+        }
+        case '/': {
+            ctx->buffer++;
+            t = calloc(1, sizeof(operator_type_t));
+            if (*ctx->buffer == '=') {
+                ctx->buffer++;
+                ((token_opr_t*)t)->base.type = TK_OPR;
+                ((token_opr_t*)t)->type = OP_DIVEQ;
+            }
+            else {
+                ((token_opr_t*)t)->base.type = TK_OPR;
+                ((token_opr_t*)t)->type = OP_DIV;
                 goto found;
             }
         }
