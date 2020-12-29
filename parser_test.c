@@ -185,25 +185,20 @@ PARSER_TEST(uint64_t)
 
     assert_that (parse(ctx), is_equal_to_contents_of(&eof_node, sizeof eof_node));
 }
-/*
 
 PARSER_TEST(multi_node)
 {
-    parse_context_t ctx = {
-        .text =
+    PREPARE_CTX(
             "{"
             "   uint64_t a;"
-            "}",
-    };
+            "}");
 
-    node_t* n = parse(&ctx);
+    node_t* n = parse(ctx);
     assert_that (n, is_non_null);
     assert_that (n->type, is_equal_to(NODE_PAR));
 
     node_par_t* par = (node_par_t*)n;
     assert_that (par->contents, is_non_null);
-}
-*/
 
 TestSuite* parser_tests(void)
 {
@@ -218,7 +213,7 @@ TestSuite* parser_tests(void)
     PARSER_ADDTEST(parentheses_0);
     PARSER_ADDTEST(parentheses_1);
     PARSER_ADDTEST(uint64_t);
-    //PARSER_ADDTEST(multi_node);
+    PARSER_ADDTEST(multi_node);
 
     return suite;
 }
