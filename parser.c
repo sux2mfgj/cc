@@ -151,7 +151,7 @@ static node_t* parse_ret(context_t* ctx)
         assert("wtf");
     }
 
-    return ret;
+    return (node_t*)ret;
 }
 
 static node_t* _parse(context_t* ctx, node_t* node)
