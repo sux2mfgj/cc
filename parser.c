@@ -48,7 +48,8 @@ static node_t* parse_parenthe(context_t* ctx)
     node->base.type = NODE_PAR;
     node->base.next = NULL;
 
-    node_t* prev = NULL;
+    node_t* head = NULL;
+    node_t* cur;
 
     while (true) {
         node_t* content = parse(ctx);
@@ -66,16 +67,17 @@ static node_t* parse_parenthe(context_t* ctx)
                 assert("wtf");
             }
 
-            if (!prev) {
-                prev = content;
+            if (!head) {
+                head = content;
+                cur = head;
             }
             else {
-                prev->next = content;
-                prev = prev->next;
+                cur->next = content;
+                cur = cur->next;
             }
         }
     }
-    node->contents = prev;
+    node->contents = head;
 
     return (node_t*)node;
 }
@@ -118,17 +120,12 @@ static node_t* parse_def_val(context_t* ctx, token_ctype_t* ctype)
         return (node_t*)node;
     }
 
-    NOT_YET_IMPLEMETED;
     next = get_next_token(ctx);
-    if (next->type == TK_ASSIGN) {
-        // TODO
-        NOT_YET_IMPLEMETED;
+    if (next->type != TK_ASSIGN) {
+        assert("wtf");
     }
 
     node->init = parse(ctx);
-    if (!skip_semicolon(ctx)) {
-        assert("wtf");
-    }
 
     return (node_t*)node;
 }
