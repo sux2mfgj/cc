@@ -17,6 +17,33 @@ typedef struct {
 // $t1 = 1 + 2
 // ret $t1
 
+
+typedef struct _variable_list_t{
+    char* id;
+    struct _variable_list_t *next;
+} variable_list_t;
+
+variable_list_t* variable_list_head;
+
+static void push_variable(char* id)
+{
+    if(!variable_list_head)
+    {
+        variable_list_head = calloc(1, sizeof(variable_list_t));
+        variable_list_head->id = id;
+        variable_list_head->next = NULL;
+        return;
+    }
+
+    variable_list_t* current = variable_list_head;
+    while(current)
+    {
+        current = current->next;
+    }
+
+    NOT_YET_IMPLEMETED;
+}
+
 static void put_ir(ir_t* ir, FILE* stream)
 {
     switch (ir->type) {
@@ -100,6 +127,23 @@ static ir_t* _gen_ir(node_t* node, FILE* stream)
             assert(false && "wtf!?");
         case NODE_EOF:
             break;
+        case NODE_DEF_VAL:
+        {
+            node_def_val_t *n = (node_def_val_t *)node;
+            push_variable(n->id);
+
+            if(!n->init)
+            {
+                fprintf(stream, "u_%s = 0\n", n->id);
+            }
+            else
+            {
+                ir_t* result = _gen_ir(n->init, stream);
+                fprintf(stream, "u_%s = ", n->id);
+                put_ir(result, stream);
+            }
+            break;
+        }
     }
 
     return NULL;
