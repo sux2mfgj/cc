@@ -144,10 +144,6 @@ static node_t* parse_ret(context_t* ctx)
         ret->regexp = parse(ctx);
     }
 
-    if (!skip_semicolon(ctx)) {
-        assert("wtf");
-    }
-
     return (node_t*)ret;
 }
 

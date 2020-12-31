@@ -141,13 +141,16 @@ static ir_t* _gen_ir(node_t* node, FILE* stream)
             }
             break;
         }
-        case NODE_RET: {
-            break;
-        }
         case NODE_ASSIGN: {
             node_assign_t* n = (node_assign_t*)node;
             if (!n->right) {
-                NOT_YET_IMPLEMETED;
+                ir_t* ir = calloc(1, sizeof(ir_t));
+                ir->type = IR_VAR;
+                ir->var_index = var_index++;
+
+                put_ir(ir, stream);
+                fprintf(stream, " = u_%s\n", n->id);
+                return ir;
             }
             ir_t* result = _gen_ir(n->right, stream);
             fprintf(stream, "u_%s = ", n->id);
@@ -167,6 +170,14 @@ static ir_t* _gen_ir(node_t* node, FILE* stream)
             else if (n->type == UNARY_DEC) {
                 fprintf(stream, " - u_%s\n", n->id);
             }
+            break;
+        }
+        case NODE_RET: {
+            node_ret_t* n = (node_ret_t*)node;
+            ir_t* result = _gen_ir(n->regexp, stream);
+            fprintf(stream, "return ");
+            put_ir(result, stream);
+            fprintf(stream, "\n");
             break;
         }
         default: {
