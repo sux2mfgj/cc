@@ -239,21 +239,30 @@ static token_t* _next_token(context_t* ctx)
                 goto found;
             }
             else {
-                t = calloc(1, sizeof(token_t));
-                t->type = TK_NOT;
+                t = calloc(1, sizeof(token_unary_t));
+                ((token_unary_t*)t)->base.type = TK_UNARY;
+                ((token_unary_t*)t)->type = UNARY_NOT;
                 goto found;
             }
         }
         case '+': {
             ctx->buffer++;
-            t = calloc(1, sizeof(operator_type_t));
             if (*ctx->buffer == '=') {
+                t = calloc(1, sizeof(operator_type_t));
                 ctx->buffer++;
                 ((token_opr_t*)t)->base.type = TK_OPR;
                 ((token_opr_t*)t)->type = OP_ADDEQ;
                 goto found;
             }
+            else if (*ctx->buffer == '+') {
+                t = calloc(1, sizeof(token_unary_t));
+                ((token_unary_t*)t)->base.type = TK_UNARY;
+                ((token_unary_t*)t)->type = UNARY_INC;
+                ctx->buffer++;
+                goto found;
+            }
             else {
+                t = calloc(1, sizeof(operator_type_t));
                 ((token_opr_t*)t)->base.type = TK_OPR;
                 ((token_opr_t*)t)->type = OP_PLUS;
                 goto found;
@@ -261,11 +270,17 @@ static token_t* _next_token(context_t* ctx)
         }
         case '-': {
             ctx->buffer++;
-            t = calloc(1, sizeof(operator_type_t));
             if (*ctx->buffer == '=') {
                 ctx->buffer++;
                 ((token_opr_t*)t)->base.type = TK_OPR;
                 ((token_opr_t*)t)->type = OP_MINEQ;
+                goto found;
+            }
+            else if (*ctx->buffer == '-') {
+                t = calloc(1, sizeof(token_unary_t));
+                ((token_unary_t*)t)->base.type = TK_UNARY;
+                ((token_unary_t*)t)->type = UNARY_DEC;
+                ctx->buffer++;
                 goto found;
             }
             else {

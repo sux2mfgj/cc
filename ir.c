@@ -155,6 +155,20 @@ static ir_t* _gen_ir(node_t* node, FILE* stream)
             fprintf(stream, "\n");
             break;
         }
+        case NODE_UNARY: {
+            node_unary_t* n = (node_unary_t*)node;
+            if (n->type == UNARY_NOT) {
+                NOT_YET_IMPLEMETED;
+            }
+            fprintf(stream, "u_%s = u_%s", n->id, n->id);
+            if (n->type == UNARY_INC) {
+                fprintf(stream, " + u_%s\n", n->id);
+            }
+            else if (n->type == UNARY_DEC) {
+                fprintf(stream, " - u_%s\n", n->id);
+            }
+            break;
+        }
         default: {
             printf("oh my gosh %d\n", node->type);
             NOT_YET_IMPLEMETED;

@@ -10,7 +10,7 @@ typedef enum {
     TK_L_PAR,   //{
     TK_R_PAR,   // }
     TK_ASSIGN,  // =
-    TK_NOT,     // !
+    TK_UNARY,   // !, ++, --
     TK_ID,
     TK_EOF,
     TK_TYPE,  // uint64_t
@@ -44,6 +44,12 @@ typedef enum {
     OP_DIVEQ
 } operator_type_t;
 
+typedef enum {
+    UNARY_NOT,
+    UNARY_INC,
+    UNARY_DEC,
+} unary_opr_t;
+
 typedef struct {
     token_t base;
     operator_type_t type;
@@ -65,6 +71,11 @@ typedef enum {
     LEX_OK,
     LEX_EOI,
 } lex_err_t;
+
+typedef struct {
+    token_t base;
+    unary_opr_t type;
+} token_unary_t;
 
 token_t* get_next_token(context_t* ctx);
 token_t* get_front_token(context_t* ctx);

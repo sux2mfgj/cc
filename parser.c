@@ -151,21 +151,30 @@ static node_t* parse_ret(context_t* ctx)
     return (node_t*)ret;
 }
 
-static node_t* parse_assign(context_t* ctx, token_id_t* id)
+static node_t* parse_id(context_t* ctx, token_id_t* id)
 {
-    node_assign_t* node = calloc(1, sizeof(node_assign_t));
-
-    node->base.type = NODE_ASSIGN;
-    node->id = id->id;
-
     token_t* t = get_front_token(ctx);
     if (t->type == TK_SEM) {
+        node_assign_t* node = calloc(1, sizeof(node_assign_t));
+        node->base.type = NODE_ASSIGN;
+        node->id = id->id;
         node->right = NULL;
         return (node_t*)node;
     }
     else if (t->type == TK_ASSIGN) {
+        node_assign_t* node = calloc(1, sizeof(node_assign_t));
+        node->base.type = NODE_ASSIGN;
+        node->id = id->id;
         get_next_token(ctx);
         node->right = parse(ctx);
+        return (node_t*)node;
+    }
+    else if (t->type == TK_UNARY) {
+        node_unary_t* node = calloc(1, sizeof(node_unary_t));
+        node->base.type = NODE_UNARY;
+        node->id = id->id;
+        node->type = ((token_unary_t*)t)->type;
+        get_next_token(ctx);
         return (node_t*)node;
     }
 
@@ -213,7 +222,7 @@ static node_t* _parse(context_t* ctx, node_t* node)
     else if (t1->type == TK_ID) {
         token_id_t* id = (token_id_t*)t1;
         get_next_token(ctx);
-        return parse_assign(ctx, id);
+        return parse_id(ctx, id);
     }
 
     NOT_YET_IMPLEMETED;
