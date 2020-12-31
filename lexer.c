@@ -271,6 +271,7 @@ static token_t* _next_token(context_t* ctx)
         case '-': {
             ctx->buffer++;
             if (*ctx->buffer == '=') {
+                t = calloc(1, sizeof(token_opr_t));
                 ctx->buffer++;
                 ((token_opr_t*)t)->base.type = TK_OPR;
                 ((token_opr_t*)t)->type = OP_MINEQ;
@@ -284,6 +285,7 @@ static token_t* _next_token(context_t* ctx)
                 goto found;
             }
             else {
+                t = calloc(1, sizeof(token_opr_t));
                 ((token_opr_t*)t)->base.type = TK_OPR;
                 ((token_opr_t*)t)->type = OP_MINUS;
                 goto found;
