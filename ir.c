@@ -141,6 +141,24 @@ static ir_t* _gen_ir(node_t* node, FILE* stream)
             }
             break;
         }
+        case NODE_RET: {
+            break;
+        }
+        case NODE_ASSIGN: {
+            node_assign_t* n = (node_assign_t*)node;
+            if (!n->right) {
+                NOT_YET_IMPLEMETED;
+            }
+            ir_t* result = _gen_ir(n->right, stream);
+            fprintf(stream, "u_%s = ", n->id);
+            put_ir(result, stream);
+            fprintf(stream, "\n");
+            break;
+        }
+        default: {
+            printf("oh my gosh %d\n", node->type);
+            NOT_YET_IMPLEMETED;
+        }
     }
 
     return NULL;

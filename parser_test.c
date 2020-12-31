@@ -263,6 +263,19 @@ PARSER_TEST(return_1)
     assert_that(n->type, is_equal_to(NODE_EOF));
 }
 
+PARSER_TEST(assign_0)
+{
+    PREPARE_CTX(
+            "{"
+            "   uint64_t a;"
+            "   a = 1 + 2;"
+            "}");
+
+    node_t* n = parse(ctx);
+    assert_that (n, is_non_null);
+    //TODO
+}
+
 TestSuite* parser_tests(void)
 {
     TestSuite* suite = create_test_suite();
@@ -280,6 +293,7 @@ TestSuite* parser_tests(void)
     PARSER_ADDTEST(return_0);
     PARSER_ADDTEST(return_1);
     PARSER_ADDTEST(def_variable_0);
+    PARSER_ADDTEST(assign_0);
 
     return suite;
 }
