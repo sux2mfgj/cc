@@ -76,6 +76,8 @@ static void put_op(node_op_t* node, FILE* stream)
             fputs(" / ", stream);
             break;
         }
+        default:
+            NOT_YET_IMPLEMETED;
     }
 }
 
@@ -116,7 +118,7 @@ static ir_t* _gen_ir(node_t* node, FILE* stream)
             node_par_t* par = (node_par_t*)node;
             node_t* cur = par->contents;
             for (; cur; cur = cur->next) {
-                ir_t* ir = _gen_ir(cur, stream);
+                _gen_ir(cur, stream); //TODO use the returned value?
             }
 
             break;
