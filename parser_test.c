@@ -218,9 +218,9 @@ PARSER_TEST(multi_node)
 PARSER_TEST(def_variable_0)
 {
     PREPARE_CTX(
-            "{"
-            "   uint64_t a = 1 + 2;"
-            "}");
+        "{"
+        "   uint64_t a = 1 + 2;"
+        "}");
 
     node_t* n = parse(ctx);
     assert_that(n, is_non_null);
@@ -229,7 +229,7 @@ PARSER_TEST(def_variable_0)
 
     assert_that(np->contents, is_non_null);
 
-    //TODO
+    // TODO
 }
 
 PARSER_TEST(return_0)
@@ -240,6 +240,11 @@ PARSER_TEST(return_0)
 
     assert_that(n->type, is_equal_to(NODE_RET));
     assert_that(((node_ret_t*)n)->regexp, is_null);
+
+    n = parse(ctx);
+    assert_that(n, is_non_null);
+    assert_that(n->type, is_equal_to(NODE_SEM));
+    get_next_token(ctx);
 
     n = parse(ctx);
     assert_that(n, is_non_null);
@@ -260,20 +265,25 @@ PARSER_TEST(return_1)
 
     n = parse(ctx);
     assert_that(n, is_non_null);
+    assert_that(n->type, is_equal_to(NODE_SEM));
+    get_next_token(ctx);
+
+    n = parse(ctx);
+    assert_that(n, is_non_null);
     assert_that(n->type, is_equal_to(NODE_EOF));
 }
 
 PARSER_TEST(assign_0)
 {
     PREPARE_CTX(
-            "{"
-            "   uint64_t a;"
-            "   a = 1 + 2;"
-            "}");
+        "{"
+        "   uint64_t a;"
+        "   a = 1 + 2;"
+        "}");
 
     node_t* n = parse(ctx);
-    assert_that (n, is_non_null);
-    //TODO
+    assert_that(n, is_non_null);
+    // TODO
 }
 
 TestSuite* parser_tests(void)
