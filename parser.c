@@ -28,6 +28,8 @@ static node_t* parse_op(context_t* ctx, node_t* left, token_opr_t* op_token)
             // node->right = parse(ctx);
             node->right = _parse(ctx, NULL);
             break;
+        default:
+            NOT_YET_IMPLEMETED;
     }
     assert(node->right && "detect invalid token (EOF)");
 

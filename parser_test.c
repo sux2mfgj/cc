@@ -27,13 +27,6 @@ PARSER_TEST(num_0)
 {
     PREPARE_CTX("0;")
 
-    node_val_t node = {
-        .base =
-            {
-                .type = NODE_VAL,
-            },
-    };
-
     token_number_t token = {
         .base =
             {
@@ -86,8 +79,18 @@ PARSER_TEST(op_0)
     node_op_t* op_node = (node_op_t*)result;
     assert_that(op_node->token, is_equal_to_contents_of(&op, sizeof op));
     assert_that(op_node->left, is_non_null);
+    assert_that(op_node->left->type, is_equal_to(NODE_VAL));
     assert_that(op_node->right, is_non_null);
-    // TODO check the values
+    assert_that(op_node->right->type, is_equal_to(NODE_VAL));
+
+    node_val_t* left = (node_val_t*)op_node->left;
+    assert_that(left->token, is_non_null);
+    assert_that(left->token, is_equal_to_contents_of(&token_1, sizeof token_1));
+
+    node_val_t* right = (node_val_t*)op_node->right;
+    assert_that(right->token, is_non_null);
+    assert_that(right->token,
+                is_equal_to_contents_of(&token_12, sizeof token_12));
 }
 
 PARSER_TEST(op_1)
@@ -168,10 +171,27 @@ PARSER_TEST(parentheses_1)
             },
         .uint64 = 1,
     };
+    token_number_t token_2 = {
+        .base =
+            {
+                .type = TK_NUM,
+            },
+        .uint64 = 2,
+    };
 
     node_op_t* op = (node_op_t*)np->contents;
     assert_that(op->left->type, is_equal_to(NODE_VAL));
     assert_that(op->right->type, is_equal_to(NODE_VAL));
+
+    node_val_t* left = (node_val_t*)op->left;
+    assert_that(left->token, is_non_null);
+    assert_that(left->token, is_equal_to_contents_of(&token_1, sizeof token_1));
+
+    node_val_t* right = (node_val_t*)op->right;
+    assert_that(right->token, is_non_null);
+    assert_that(right->token,
+                is_equal_to_contents_of(&token_2, sizeof token_2));
+
     assert_that(op->base.next, is_null);
     assert_that(parse(ctx),
                 is_equal_to_contents_of(&eof_node, sizeof eof_node));

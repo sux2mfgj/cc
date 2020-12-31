@@ -35,6 +35,8 @@ static void debug_print_token(token_t* t)
                 case OP_NEQ:
                     NOT_YET_IMPLEMETED;
                     break;
+                default:
+                    NOT_YET_IMPLEMETED;
             }
             debug("token [op]   %c\n", c);
             break;

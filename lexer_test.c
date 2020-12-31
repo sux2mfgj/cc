@@ -171,22 +171,6 @@ LEXER_TEST(uint64_t_1)
 {
     PREPARE_CTX("uint64_t a;");
 
-    token_ctype_t def_token = {
-        .base =
-            {
-                .type = TK_TYPE,
-            },
-        .type = TYPE_UINT64,
-    };
-
-    token_id_t id_token = {
-        .base =
-            {
-                .type = TK_ID,
-            },
-        .id = "a",
-    };
-
     token_t* t = get_next_token(ctx);
     assert_that(t->type, is_equal_to(TK_TYPE));
     token_ctype_t* ctype = (token_ctype_t*)t;
