@@ -14,6 +14,7 @@ typedef enum {
     NODE_RET,
     NODE_ASSIGN,
     NODE_UNARY,
+    NODE_FUNC,
 } node_type_t;
 
 typedef struct _node_t {
@@ -63,5 +64,12 @@ typedef struct {
     char* id;
     unary_opr_t type;
 } node_unary_t;
+
+typedef struct {
+    node_t base;
+    type_type_t ret_type;
+    node_def_val_t* args;
+    node_t* proc;
+} node_func_t;
 
 node_t* parse(context_t* ctx);

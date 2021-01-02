@@ -116,16 +116,38 @@ static node_t* parse_def_val(context_t* ctx,
     node->id = id->id;
 
     token_t* next = get_front_token(ctx);
-    if (next->type == TK_SEM) {
-        return (node_t*)node;
+    if (next->type == TK_ASSIGN) {
+        get_next_token(ctx);
+        node->init = parse(ctx);
     }
 
-    next = get_next_token(ctx);
-    if (next->type != TK_ASSIGN) {
-        assert("wtf");
+    return (node_t*)node;
+}
+
+static node_t* parse_def_func(context_t* ctx,
+                              token_ctype_t* ctype,
+                              token_id_t* id)
+{
+    token_t* t = get_next_token(ctx);
+    assert(t->type == TK_L_R_PAR);
+
+    node_func_t* node = calloc(1, sizeof(node_func_t));
+
+    node->base.type = NODE_FUNC;
+    node->ret_type = ctype->type;
+    node_def_val_t* args = NULL;
+
+    while (true) {
+        t = get_next_token(ctx);
+        if (t->type == TK_R_R_PAR) {
+            node->args = args;
+            break;
+        }
+
+        NOT_YET_IMPLEMETED;
     }
 
-    node->init = parse(ctx);
+    node->proc = parse(ctx);
 
     return (node_t*)node;
 }
@@ -215,7 +237,13 @@ static node_t* _parse(context_t* ctx, node_t* node)
         assert(t2->type == TK_ID);
         token_id_t* id = (token_id_t*)t2;
 
-        return parse_def_val(ctx, type, id);
+        t2 = get_front_token(ctx);
+        if (t2->type == TK_L_R_PAR) {
+            return parse_def_func(ctx, type, id);
+        }
+        else {
+            return parse_def_val(ctx, type, id);
+        }
     }
     else if (t1->type == TK_RET) {
         get_next_token(ctx);

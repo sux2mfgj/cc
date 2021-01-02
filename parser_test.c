@@ -306,6 +306,25 @@ PARSER_TEST(assign_0)
     // TODO
 }
 
+PARSER_TEST(func_0)
+{
+    PREPARE_CTX(
+        "void main()"
+        "{"
+        "}");
+
+    node_t* n = parse(ctx);
+    assert_that(n, is_non_null);
+    assert_that(n->type, is_equal_to(NODE_FUNC));
+
+    node_func_t* f = (node_func_t*)n;
+    assert_that(f->ret_type, is_equal_to(TYPE_VOID));
+    assert_that(f->args, is_null);
+    assert_that(f->proc->type, is_equal_to(NODE_PAR));
+    node_par_t* par = (node_par_t*)f->proc;
+    assert_that(par->contents, is_null);
+}
+
 TestSuite* parser_tests(void)
 {
     TestSuite* suite = create_test_suite();
@@ -324,6 +343,7 @@ TestSuite* parser_tests(void)
     PARSER_ADDTEST(return_1);
     PARSER_ADDTEST(def_variable_0);
     PARSER_ADDTEST(assign_0);
+    PARSER_ADDTEST(func_0);
 
     return suite;
 }
