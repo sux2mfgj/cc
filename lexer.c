@@ -175,6 +175,8 @@ static bool is_reserved(context_t* ctx)
         case ';':
         case '{':
         case '}':
+        case '(':
+        case ')':
             // TODO
             return true;
     }

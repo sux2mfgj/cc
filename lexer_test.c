@@ -243,6 +243,22 @@ LEXER_TEST(round_par_0)
     assert_that(t->type, is_equal_to(TK_R_R_PAR));
 }
 
+LEXER_TEST(round_par_1)
+{
+    PREPARE_CTX("main()");
+
+    token_t* t = get_next_token(ctx);
+    assert_that(t, is_non_null);
+    assert_that(t->type, is_equal_to(TK_ID));
+
+    t = get_next_token(ctx);
+    assert_that(t, is_non_null);
+    assert_that(t->type, is_equal_to(TK_L_R_PAR));
+    t = get_next_token(ctx);
+    assert_that(t, is_non_null);
+    assert_that(t->type, is_equal_to(TK_R_R_PAR));
+}
+
 TestSuite* lexer_tests()
 {
     TestSuite* suite = create_test_suite();
@@ -260,6 +276,7 @@ TestSuite* lexer_tests()
     LEXER_ADDTEST(return_0);
     LEXER_ADDTEST(void_0);
     LEXER_ADDTEST(round_par_0);
+    LEXER_ADDTEST(round_par_1);
 
     return suite;
 }
