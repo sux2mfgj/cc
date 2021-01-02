@@ -4,13 +4,15 @@
 #include "context.h"
 
 typedef enum {
-    TK_OPR,     // +, -, *, /, ==, !=, +=,
-    TK_NUM,     // 1 ~ 9
-    TK_SEM,     // ;
-    TK_L_PAR,   //{
-    TK_R_PAR,   // }
-    TK_ASSIGN,  // =
-    TK_UNARY,   // !, ++, --
+    TK_OPR,      // +, -, *, /, ==, !=, +=,
+    TK_NUM,      // 1 ~ 9
+    TK_SEM,      // ;
+    TK_L_PAR,    // { //TODO gather the parenthes {, }, (, ), [, ]
+    TK_R_PAR,    // }
+    TK_L_R_PAR,  // (
+    TK_R_R_PAR,  // )
+    TK_ASSIGN,   // =
+    TK_UNARY,    // !, ++, --
     TK_ID,
     TK_EOF,
     TK_TYPE,  // uint64_t, void

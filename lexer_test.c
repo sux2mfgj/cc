@@ -231,6 +231,18 @@ LEXER_TEST(void_0)
     assert_that(((token_ctype_t*)t)->type, is_equal_to(TYPE_VOID));
 }
 
+LEXER_TEST(round_par_0)
+{
+    PREPARE_CTX("()");
+
+    token_t* t = get_next_token(ctx);
+    assert_that(t, is_non_null);
+    assert_that(t->type, is_equal_to(TK_L_R_PAR));
+    t = get_next_token(ctx);
+    assert_that(t, is_non_null);
+    assert_that(t->type, is_equal_to(TK_R_R_PAR));
+}
+
 TestSuite* lexer_tests()
 {
     TestSuite* suite = create_test_suite();
@@ -247,6 +259,7 @@ TestSuite* lexer_tests()
     LEXER_ADDTEST(multi_node);
     LEXER_ADDTEST(return_0);
     LEXER_ADDTEST(void_0);
+    LEXER_ADDTEST(round_par_0);
 
     return suite;
 }

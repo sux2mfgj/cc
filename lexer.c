@@ -356,6 +356,18 @@ static token_t* _next_token(context_t* ctx)
             t->type = TK_R_PAR;
             goto found;
         }
+        case '(': {
+            ctx->buffer++;
+            t = calloc(1, sizeof(token_t));
+            t->type = TK_L_R_PAR;
+            goto found;
+        }
+        case ')': {
+            ctx->buffer++;
+            t = calloc(1, sizeof(token_t));
+            t->type = TK_R_R_PAR;
+            goto found;
+        }
     }
 
     t = parse_id(ctx);
