@@ -78,6 +78,8 @@ static void debug_print_token(token_t* t)
                     text = "uint64_t";
                     break;
                 }
+                default:
+                    NOT_YET_IMPLEMETED;
             }
 
             debug("token [type] %s\n", text);
@@ -124,14 +126,29 @@ static token_t* parse_value(context_t* ctx)
     return (token_t*)t;
 }
 
+static bool check_str_without_terminator(char* str, const char* ideal)
+{
+    return !strncmp(str, ideal, strlen(ideal));
+}
+
 static token_t* try_to_parse_reserved(context_t* ctx)
 {
-    if (!strncmp(ctx->buffer, "uint64_t", sizeof "uint64_t" - 1)) {
+    if (check_str_without_terminator(ctx->buffer, "uint64_t")) {
         token_ctype_t* t = calloc(1, sizeof(token_ctype_t));
         t->base.type = TK_TYPE;
         t->type = TYPE_UINT64;
 
-        ctx->buffer += sizeof "uint64_t" - 1;
+        ctx->buffer += strlen("uint64_t");
+
+        return (token_t*)t;
+    }
+
+    if (check_str_without_terminator(ctx->buffer, "void")) {
+        token_ctype_t* t = calloc(1, sizeof(token_ctype_t));
+        t->base.type = TK_TYPE;
+        t->type = TYPE_VOID;
+
+        ctx->buffer += strlen("void");
 
         return (token_t*)t;
     }

@@ -13,7 +13,7 @@ typedef enum {
     TK_UNARY,   // !, ++, --
     TK_ID,
     TK_EOF,
-    TK_TYPE,  // uint64_t
+    TK_TYPE,  // uint64_t, void
     TK_RET,   // return
 } token_type_t;
 
@@ -55,7 +55,7 @@ typedef struct {
     operator_type_t type;
 } token_opr_t;
 
-typedef enum { TYPE_UINT64 } type_type_t;
+typedef enum { TYPE_UINT64, TYPE_VOID } type_type_t;
 
 typedef struct {
     token_t base;
