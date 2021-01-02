@@ -68,6 +68,7 @@ typedef struct {
 typedef struct {
     node_t base;
     type_type_t ret_type;
+    char* id;
     node_def_val_t* args;
     node_t* proc;
 } node_func_t;

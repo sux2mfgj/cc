@@ -135,6 +135,7 @@ static node_t* parse_def_func(context_t* ctx,
 
     node->base.type = NODE_FUNC;
     node->ret_type = ctype->type;
+    node->id = id->id;
     node_def_val_t* args = NULL;
 
     while (true) {
