@@ -319,6 +319,7 @@ static token_t* _next_token(context_t* ctx)
                 ctx->buffer++;
                 ((token_opr_t*)t)->base.type = TK_OPR;
                 ((token_opr_t*)t)->type = OP_MULEQ;
+                goto found;
             }
             else {
                 ((token_opr_t*)t)->base.type = TK_OPR;
@@ -333,6 +334,7 @@ static token_t* _next_token(context_t* ctx)
                 ctx->buffer++;
                 ((token_opr_t*)t)->base.type = TK_OPR;
                 ((token_opr_t*)t)->type = OP_DIVEQ;
+                goto found;
             }
             else {
                 ((token_opr_t*)t)->base.type = TK_OPR;
