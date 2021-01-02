@@ -1,4 +1,5 @@
-CC	:= clang
+SB	:= #scan-build
+CC	:= $(SB) clang
 CFLAGS	:= -Wall -g3
 
 module	:= context.c lexer.c parser.c ir.c debug.c
