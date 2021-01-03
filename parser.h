@@ -9,8 +9,6 @@ typedef enum {
     NODE_EOF,
     NODE_PAR,
     NODE_DEF_VAL,
-    NODE_R_PAR,
-    NODE_SEM,
     NODE_RET,
     NODE_ASSIGN,
     NODE_UNARY,

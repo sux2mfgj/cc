@@ -123,9 +123,6 @@ static ir_t* _gen_ir(node_t* node, FILE* stream)
 
             break;
         }
-        case NODE_SEM:
-        case NODE_R_PAR:
-            assert(false && "wtf!?");
         case NODE_EOF:
             break;
         case NODE_DEF_VAL: {
