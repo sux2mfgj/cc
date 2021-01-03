@@ -118,7 +118,7 @@ static ir_t* _gen_ir(node_t* node, FILE* stream)
             node_par_t* par = (node_par_t*)node;
             node_t* cur = par->contents;
             for (; cur; cur = cur->next) {
-                _gen_ir(cur, stream); //TODO use the returned value?
+                _gen_ir(cur, stream);  // TODO use the returned value?
             }
 
             break;
@@ -180,6 +180,12 @@ static ir_t* _gen_ir(node_t* node, FILE* stream)
             fprintf(stream, "return ");
             put_ir(result, stream);
             fprintf(stream, "\n");
+            break;
+        }
+        case NODE_FUNC: {
+            node_func_t* n = (node_func_t*)node;
+            fprintf(stream, "%s:\n", n->id);
+            _gen_ir(n->proc, stream);
             break;
         }
         default: {
