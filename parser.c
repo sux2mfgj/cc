@@ -9,6 +9,32 @@
 // static node_t* parse_func_def(context_t* ctx, token_ctype_t* type,
 // token_id_t* id) { }
 
+static node_t* parse_single_node(context_t* ctx)
+{
+    token_t* t = get_next_token(ctx);
+    switch (t->type) {
+        case TK_NUM: {
+            node_val_t* n = calloc(1, sizeof(node_val_t));
+            n->base.type = NODE_VAL;
+            n->uint64 = ((token_number_t*)t)->uint64;
+            return (node_t*)n;
+        }
+        case TK_ID:
+        case TK_L_R_PAR:
+            NOT_YET_IMPLEMETED;
+        default:
+            errx(EXIT_FAILURE, "invalid token found");
+    }
+}
+
+static void skip_semicolon(context_t* ctx)
+{
+    token_t* t = get_next_token(ctx);
+    if (t->type != TK_SEM) {
+        errx(EXIT_FAILURE, "invalid token found");
+    }
+}
+
 static node_t* parse_var_def(context_t* ctx,
                              token_ctype_t* type,
                              token_id_t* id)
@@ -24,7 +50,9 @@ static node_t* parse_var_def(context_t* ctx,
         return (node_t*)node;
     }
     else if (t->type == TK_ASSIGN) {
-        NOT_YET_IMPLEMETED;
+        node->init = parse_single_node(ctx);
+        skip_semicolon(ctx);
+        return (node_t*)node;
     }
     else {
         errx(EXIT_FAILURE, "invalid input");
@@ -61,7 +89,7 @@ static node_t* parse_root(context_t* ctx)
             break;
         }
         default:
-            assert(false && "wtf!");
+            errx(EXIT_FAILURE, "invalid token found");
     }
 
     return result;

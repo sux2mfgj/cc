@@ -20,4 +20,11 @@ typedef struct {
     node_t* init;
 } node_def_val_t;
 
+typedef struct {
+    node_t base;
+    union {
+        uint64_t uint64;
+    };
+} node_val_t;
+
 node_t* generate_simple_node(node_type_t type);
