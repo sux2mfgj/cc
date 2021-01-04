@@ -5,8 +5,28 @@
 #include <stdio.h>
 #include "context.h"
 #include "lexer.h"
+#include "node.h"
+#include "parser.h"
 
 int main(int argc, char** argv)
 {
     context_t* ctx = init_context(0);
+
+    node_t *node_head = NULL, *node;
+
+    while (true) {
+        node_t* tmp = parse(ctx);
+        if (!node_head) {
+            node_head = tmp;
+            node = tmp;
+        }
+        else {
+            node->next = tmp;
+            node = node->next;
+        }
+
+        if (node->type == NODE_EOF) {
+            break;
+        }
+    }
 }

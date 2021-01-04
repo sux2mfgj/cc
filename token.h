@@ -1,5 +1,7 @@
 #pragma once
 
+#include <stdint.h>
+
 typedef enum {
     TK_OPR,      // +, -, *, /, ==, !=, +=,
     TK_NUM,      // 1 ~ 9
@@ -54,11 +56,11 @@ typedef struct {
     operator_type_t type;
 } token_opr_t;
 
-typedef enum { TYPE_UINT64, TYPE_VOID } type_type_t;
+typedef enum { TYPE_UINT64, TYPE_VOID } ctype_t;
 
 typedef struct {
     token_t base;
-    type_type_t type;
+    ctype_t type;
 } token_ctype_t;
 
 typedef struct {
