@@ -9,7 +9,6 @@ obj	:= $(src:.c=.o)
 bin	:= uopcc
 
 $(bin): $(obj) $(headers)
-	echo $^
 	$(CC) -o $@ $(obj)
 
 clean:
