@@ -2,8 +2,8 @@
 
 #include <stdbool.h>
 
-typedef struct _context_t{
-    bool (*read_line)(struct _context_t *ctx);
+typedef struct _context_t {
+    bool (*read_line)(struct _context_t* ctx);
     char* buffer;
 } context_t;
 

@@ -2,8 +2,8 @@ SB	:= #scan-build
 CC	:= $(SB) clang
 CFLAGS	:= -Wall -g3
 
-module	:= context.c lexer.c
-headers := context.h lexer.h
+module	:= context.c lexer.c parser.c
+headers := context.h lexer.h parser.h token.h node.h
 src	:= main.c $(module)
 obj	:= $(src:.c=.o)
 bin	:= uopcc
