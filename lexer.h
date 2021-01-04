@@ -1,6 +1,7 @@
 #pragma once
 
 #include <stdint.h>
+
 #include "context.h"
 
 typedef enum {
@@ -68,11 +69,6 @@ typedef struct {
     token_t base;
     char* id;
 } token_id_t;
-
-typedef enum {
-    LEX_OK,
-    LEX_EOI,
-} lex_err_t;
 
 typedef struct {
     token_t base;

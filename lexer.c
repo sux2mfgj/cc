@@ -1,4 +1,3 @@
-#include "lexer.h"
 #include <assert.h>
 #include <err.h>
 #include <errno.h>
@@ -6,6 +5,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
+#include "lexer.h"
 #include "util.h"
 
 static bool is_skip_char(char c)
@@ -70,11 +71,11 @@ static token_t* try_to_parse_reserved(context_t* ctx)
         return (token_t*)t;
     }
 
-    if (!strncmp(ctx->buffer, "return", sizeof "return" - 1)) {
+    if(check_str_without_terminator(ctx->buffer, "return")) {
         token_t* t = calloc(1, sizeof(token_t));
         t->type = TK_RET;
 
-        ctx->buffer += sizeof "return" - 1;
+        ctx->buffer += strlen("return");
 
         return t;
     }
@@ -300,82 +301,6 @@ static token_t* _next_token(context_t* ctx)
 found:
     return t;
 }
-
-/*
-switch (*ctx->buffer) {
-    case '=':
-    case '!':
-    case '<':
-    case '>': {
-        *word++ = *ctx->buffer++;
-        if (*ctx->buffer == '=') {
-            *word++ = *ctx->buffer++;
-        }
-        goto found;
-    }
-    case '|': {
-        *word++ = *ctx->buffer++;
-        if (*ctx->buffer == '|') {
-            *word++ = *ctx->buffer++;
-        }
-        goto found;
-    }
-    case '&': {
-        *word++ = *ctx->buffer++;
-        if (*ctx->buffer == '&') {
-            *word++ = *ctx->buffer++;
-        }
-        goto found;
-    }
-    case '+': {
-        *word++ = *ctx->buffer++;
-        if (*ctx->buffer == '+') {
-            *word++ = *ctx->buffer++;
-        }
-        goto found;
-    }
-    case '-': {
-        *word++ = *ctx->buffer++;
-        if (*ctx->buffer == '-') {
-            *word++ = *ctx->buffer++;
-        }
-        else if (*ctx->buffer == '>') {
-            *word++ = *ctx->buffer++;
-        }
-        goto found;
-    }
-    default: {
-        *word++ = *ctx->buffer++;
-        goto found;
-    }
-}
-
-if (*ctx->buffer == '"') {
-    while (true) {
-        if (*ctx->buffer == '\\') {
-            *word++ = *ctx->buffer++;
-        }
-        *word++ = *ctx->buffer++;
-        if (*ctx->buffer == '"') {
-            *word++ = *ctx->buffer++;
-            goto found;
-        }
-    }
-}
-
-if (*ctx->buffer == '\'') {
-    while (true) {
-        if (*ctx->buffer == '\\') {
-            *word++ = *ctx->buffer++;
-        }
-        *word++ = *ctx->buffer++;
-        if (*ctx->buffer == '\'') {
-            *word++ = *ctx->buffer++;
-            goto found;
-        }
-    }
-}
-*/
 
 static token_t* front = NULL;
 token_t* get_next_token(context_t* ctx)
