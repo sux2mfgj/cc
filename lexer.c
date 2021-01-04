@@ -71,7 +71,7 @@ static token_t* try_to_parse_reserved(context_t* ctx)
         return (token_t*)t;
     }
 
-    if(check_str_without_terminator(ctx->buffer, "return")) {
+    if (check_str_without_terminator(ctx->buffer, "return")) {
         token_t* t = calloc(1, sizeof(token_t));
         t->type = TK_RET;
 
@@ -95,6 +95,8 @@ static bool is_reserved(context_t* ctx)
         case '}':
         case '(':
         case ')':
+        case '<':
+        case '>':
             // TODO
             return true;
     }
@@ -260,6 +262,36 @@ static token_t* _next_token(context_t* ctx)
                 goto found;
             }
         }
+        case '<': {
+            ctx->buffer++;
+            t = calloc(1, sizeof(operator_type_t));
+            if (*ctx->buffer == '=') {
+                ctx->buffer++;
+                ((token_opr_t*)t)->base.type = TK_OPR;
+                ((token_opr_t*)t)->type = OP_LTEQ;
+                goto found;
+            }
+            else {
+                ((token_opr_t*)t)->base.type = TK_OPR;
+                ((token_opr_t*)t)->type = OP_LT;
+                goto found;
+            }
+        }
+        case '>': {
+            ctx->buffer++;
+            t = calloc(1, sizeof(operator_type_t));
+            if (*ctx->buffer == '=') {
+                ctx->buffer++;
+                ((token_opr_t*)t)->base.type = TK_OPR;
+                ((token_opr_t*)t)->type = OP_GTEQ;
+                goto found;
+            }
+            else {
+                ((token_opr_t*)t)->base.type = TK_OPR;
+                ((token_opr_t*)t)->type = OP_GT;
+                goto found;
+            }
+        }
         case ';': {
             ctx->buffer++;
             t = calloc(1, sizeof(token_t));
@@ -288,6 +320,12 @@ static token_t* _next_token(context_t* ctx)
             ctx->buffer++;
             t = calloc(1, sizeof(token_t));
             t->type = TK_R_R_PAR;
+            goto found;
+        }
+        case '#': {
+            ctx->buffer++;
+            t = calloc(1, sizeof(token_t));
+            t->type = TK_SHARP;
             goto found;
         }
     }

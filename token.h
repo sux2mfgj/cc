@@ -15,8 +15,9 @@ typedef enum {
     TK_UNARY,    // !, ++, --
     TK_ID,
     TK_EOF,
-    TK_TYPE,  // uint64_t, void
-    TK_RET,   // return
+    TK_TYPE,   // uint64_t, void
+    TK_RET,    // return
+    TK_SHARP,  // #
 } token_type_t;
 
 typedef struct _token_base {
@@ -43,7 +44,11 @@ typedef enum {
     OP_ADDEQ,
     OP_MINEQ,
     OP_MULEQ,
-    OP_DIVEQ
+    OP_DIVEQ,
+    OP_LT,  // <
+    OP_GT,  // >
+    OP_LTEQ,
+    OP_GTEQ,
 } operator_type_t;
 
 typedef enum {
