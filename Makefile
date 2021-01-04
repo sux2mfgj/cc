@@ -2,8 +2,8 @@ SB	:= #scan-build
 CC	:= $(SB) clang
 CFLAGS	:= -Wall -g3
 
-module	:= context.c lexer.c parser.c ir.c debug.c
-headers := context.h lexer.h parser.h ir.h
+module	:= context.c lexer.c
+headers := context.h lexer.h
 src	:= main.c $(module)
 obj	:= $(src:.c=.o)
 bin	:= uopcc
@@ -15,7 +15,7 @@ $(bin): $(obj) $(headers)
 clean:
 	rm -rf $(obj) $(bin) *.s a.out test.bin *.o
 
-test.bin: all_tests.c $(module) lexer_test.c parser_test.c
+test.bin: test.c $(module) lexer_test.c
 	$(CC) $(CFLAGS) $^ -lcgreen -o $@
 
 test: test.bin

@@ -3,7 +3,6 @@
 
 #include <unistd.h>
 #include "lexer.h"
-#include "parser.h"
 
 static token_opr_t plus_token = {
     .base =
@@ -37,10 +36,6 @@ static token_opr_t div_op = {
     .type = OP_DIV,
 };
 
-static node_t eof_node = {
-    .type = NODE_EOF,
-};
-
 #define PREPARE_CTX(text)                  \
     int fds[2];                            \
     int status = pipe(fds);                \
@@ -50,4 +45,3 @@ static node_t eof_node = {
     close(fds[1]);
 
 TestSuite* lexer_tests(void);
-TestSuite* parser_tests(void);
