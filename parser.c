@@ -8,6 +8,12 @@
 
 static node_t* _parse(context_t* ctx, node_t* node);
 
+static void skip_semicolon(context_t* ctx)
+{
+    token_t* t = get_next_token(ctx);
+    assert(t->type == TK_SEM);
+}
+
 static node_t* parse_op(context_t* ctx, node_t* left, token_opr_t* op_token)
 {
     node_op_t* node = calloc(1, sizeof(node_op_t));
@@ -19,26 +25,35 @@ static node_t* parse_op(context_t* ctx, node_t* left, token_opr_t* op_token)
         case OP_PLUS:
         case OP_MINUS: {
             node_t* n1 = _parse(ctx, NULL);
-            node_t* n2 = _parse(ctx, n1);
-            node->right = n2 ? n2 : n1;
+            token_t* t = get_front_token(ctx);
+            //if(get_front_token(ctx)->type == TK_SEM)
+            if(t->type == TK_SEM)
+            {
+                node->right = n1;
+            }
+            else
+            {
+                node->right = _parse(ctx, n1);
+            }
             break;
         }
         case OP_MUL:
         case OP_DIV:
             node->right = _parse(ctx, NULL);
+            token_t* t = get_front_token(ctx);
+            if(t->type != TK_SEM)
+            {
+                node = _parse(ctx, node);
+            }
+
             break;
         default:
             NOT_YET_IMPLEMETED;
     }
     assert(node->right && "detect invalid token (EOF)");
 
-    return (node_t*)node;
-}
+    return node;
 
-static void skip_semicolon(context_t* ctx)
-{
-    token_t* t = get_next_token(ctx);
-    assert(t->type == TK_SEM);
 }
 
 static node_t* parse_parenthe(context_t* ctx)
@@ -114,7 +129,7 @@ static node_t* parse_def_val(context_t* ctx,
         NOT_YET_IMPLEMETED;
     }
 
-    skip_semicolon(ctx);
+    //skip_semicolon(ctx);
     return (node_t*)node;
 }
 
@@ -198,17 +213,20 @@ static node_t* parse_id(context_t* ctx, token_id_t* id)
     return NULL;
 }
 
-static node_t* _parse(context_t* ctx, node_t* node)
+static bool reach_to_eof = false;;
+static node_t* _parse(context_t* ctx, node_t* node, bool next)
 {
     token_t* t1 = get_front_token(ctx);
 
-    if (t1->type == TK_SEM) {
-        // return generate_node(NODE_SEM);
-        return NULL;
+    if (t1->type == TK_SEM)
+    {
+        assert(!node);
+        skip_semicolon(ctx);
+        return _parse(ctx, NULL);
     }
+    assert(t1->type != TK_SEM);
 
     if (t1->type == TK_EOF) {
-        get_next_token(ctx);
         return generate_node(NODE_EOF);
     }
 
@@ -216,8 +234,13 @@ static node_t* _parse(context_t* ctx, node_t* node)
         token_number_t* nt = (token_number_t*)get_next_token(ctx);
         node_t *v = parse_val(nt);
 
-        node_t* result = _parse(ctx, v);
-        return result ? result : v;
+        token_t* t2 = get_front_token(ctx);
+        if(t2->type == TK_SEM || next)
+        {
+            return v;
+        }
+
+        return _parse(ctx, v);
     }
     else if (t1->type == TK_OPR) {
         assert(node && "wtf");
@@ -258,41 +281,5 @@ static node_t* _parse(context_t* ctx, node_t* node)
 static node_t* eof_node = NULL;
 node_t* parse(context_t* ctx)
 {
-    if(eof_node) {
-        return eof_node;
-    }
-
-    node_t* result = _parse(ctx, NULL);
-    if(result->type == NODE_EOF)
-    {
-        eof_node = result;
-    }
-
-    return result;
+    return _parse(ctx, NULL);
 }
-/*
-node_t* parse(context_t* ctx)
-{
-    if (eof_node) {
-        return eof_node;
-    }
-
-    node_t* node = NULL;
-    while (true) {
-        node_t* next = _parse(ctx, node);
-
-        if (!next)
-        {
-            continue;
-        }
-
-        if (next->type == NODE_EOF) {
-            eof_node = next;
-        }
-
-        node = next;
-    }
-
-    return node;
-}
-*/

@@ -41,10 +41,6 @@ static node_t eof_node = {
     .type = NODE_EOF,
 };
 
-static node_t sem_node = {
-    .type = NODE_SEM,
-};
-
 #define PREPARE_CTX(text)                  \
     int fds[2];                            \
     int status = pipe(fds);                \

@@ -4,9 +4,9 @@
 #include "lexer.h"
 
 typedef enum {
+    NODE_EOF,
     NODE_OP,
     NODE_VAL,
-    NODE_EOF,
     NODE_PAR,
     NODE_DEF_VAL,
     NODE_RET,
