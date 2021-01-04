@@ -163,6 +163,34 @@ PARSER_TEST(def_func_0)
     assert_that(par->contents, is_null);
 }
 
+PARSER_TEST(def_func_1)
+{
+    PREPARE_CTX(
+        "void main()"
+        "{"
+        "   uint64_t a;"
+        "}");
+    node_t* n = parse(ctx);
+    assert_that(n, is_non_null);
+    assert_that(n->type, is_equal_to(NODE_DEF_FUNC));
+
+    node_func_t* func = (node_func_t*)n;
+    assert_that(func->ret_type, is_equal_to(TYPE_VOID));
+    assert_that(func->id, is_equal_to_contents_of("main", sizeof("main")));
+    assert_that(func->args, is_null);
+    assert_that(func->proc, is_non_null);
+    assert_that(func->proc->type, is_equal_to(NODE_PAR));
+
+    node_par_t* par = (node_par_t*)func->proc;
+    assert_that(par->contents, is_non_null);
+    assert_that(par->contents->type, is_equal_to(NODE_DEF_VAR));
+
+    node_def_val_t* def = (node_def_val_t*)par->contents;
+    assert_that(def->type, is_equal_to(TYPE_UINT64));
+    assert_that(def->id, is_equal_to_contents_of("a", sizeof("a")));
+    assert_that(def->init, is_null);
+}
+
 TestSuite* parser_tests(void)
 {
     TestSuite* suite = create_test_suite();
@@ -175,6 +203,7 @@ TestSuite* parser_tests(void)
     PARSER_ADDTEST(def_val_4);
 
     PARSER_ADDTEST(def_func_0);
+    PARSER_ADDTEST(def_func_1);
 
     return suite;
 }

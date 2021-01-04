@@ -6,13 +6,54 @@
 #include "parser.h"
 #include "util.h"
 
+static node_t* parse_expr(context_t* ctx);
+
+static void skip_semicolon(context_t* ctx)
+{
+    token_t* t = get_next_token(ctx);
+    if (t->type != TK_SEM) {
+        errx(EXIT_FAILURE, "invalid token found: %d", __LINE__);
+    }
+}
+
+static node_t* parse_var_def(context_t* ctx,
+                             token_ctype_t* type,
+                             token_id_t* id)
+{
+    token_t* t = get_next_token(ctx);
+
+    node_def_val_t* node = calloc(1, sizeof(node_def_val_t));
+    node->base.type = NODE_DEF_VAR;
+    node->type = type->type;
+    node->id = id->id;
+
+    if (t->type == TK_SEM) {
+        return (node_t*)node;
+    }
+    else if (t->type == TK_ASSIGN) {
+        node->init = parse_expr(ctx);
+        skip_semicolon(ctx);
+        return (node_t*)node;
+    }
+    else {
+        errx(EXIT_FAILURE, "invalid input");
+    }
+}
+
 static node_t* parse_node_in_par(context_t* ctx)
 {
     token_t* t = get_front_token(ctx);
     assert(t->type != TK_R_PAR);
 
     switch (t->type) {
-        case TK_TYPE:
+        case TK_TYPE: {
+            token_ctype_t* ctype = (token_ctype_t*)get_next_token(ctx);
+            t = get_next_token(ctx);
+            assert(t->type == TK_ID);
+            token_id_t* id = (token_id_t*)t;
+
+            return parse_var_def(ctx, ctype, id);
+        }
         case TK_ID:
         case TK_NUM:
         case TK_RET:
@@ -94,13 +135,17 @@ static node_t* parse_func_def(context_t* ctx,
 
 static node_t* parse_single_node(context_t* ctx)
 {
-    token_t* t = get_next_token(ctx);
+    token_t* t = get_front_token(ctx);
     switch (t->type) {
         case TK_NUM: {
+            token_number_t* tnum = (token_number_t*)get_next_token(ctx);
             node_val_t* n = calloc(1, sizeof(node_val_t));
             n->base.type = NODE_VAL;
-            n->uint64 = ((token_number_t*)t)->uint64;
+            n->uint64 = tnum->uint64;
             return (node_t*)n;
+        }
+        case TK_L_PAR: {
+            return parse_parenthes(ctx);
         }
         case TK_ID:
         case TK_L_R_PAR:
@@ -109,8 +154,6 @@ static node_t* parse_single_node(context_t* ctx)
             errx(EXIT_FAILURE, "invalid token found: %d", __LINE__);
     }
 }
-
-static node_t* parse_expr(context_t* ctx);
 
 static node_t* _parse_expr(context_t* ctx, node_t* left)
 {
@@ -157,38 +200,6 @@ static node_t* parse_expr(context_t* ctx)
             return left;
         }
         left = _parse_expr(ctx, left);
-    }
-}
-
-static void skip_semicolon(context_t* ctx)
-{
-    token_t* t = get_next_token(ctx);
-    if (t->type != TK_SEM) {
-        errx(EXIT_FAILURE, "invalid token found: %d", __LINE__);
-    }
-}
-
-static node_t* parse_var_def(context_t* ctx,
-                             token_ctype_t* type,
-                             token_id_t* id)
-{
-    token_t* t = get_next_token(ctx);
-
-    node_def_val_t* node = calloc(1, sizeof(node_def_val_t));
-    node->base.type = NODE_DEF_VAR;
-    node->type = type->type;
-    node->id = id->id;
-
-    if (t->type == TK_SEM) {
-        return (node_t*)node;
-    }
-    else if (t->type == TK_ASSIGN) {
-        node->init = parse_expr(ctx);
-        skip_semicolon(ctx);
-        return (node_t*)node;
-    }
-    else {
-        errx(EXIT_FAILURE, "invalid input");
     }
 }
 
