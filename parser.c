@@ -6,8 +6,91 @@
 #include "parser.h"
 #include "util.h"
 
-// static node_t* parse_func_def(context_t* ctx, token_ctype_t* type,
-// token_id_t* id) { }
+static node_t* parse_node_in_par(context_t* ctx)
+{
+    token_t* t = get_front_token(ctx);
+    assert(t->type != TK_R_PAR);
+
+    switch (t->type) {
+        case TK_TYPE:
+        case TK_ID:
+        case TK_NUM:
+        case TK_RET:
+        case TK_L_R_PAR:
+            NOT_YET_IMPLEMETED;
+        default:
+            errx(EXIT_FAILURE, "invalid token found: %d", __LINE__);
+    }
+
+    NOT_YET_IMPLEMETED;
+}
+
+static node_t* parse_parenthes(context_t* ctx)
+{
+    token_t* t = get_next_token(ctx);
+    assert(t->type == TK_L_PAR);
+
+    node_par_t* par = calloc(1, sizeof(node_func_t));
+    par->base.type = NODE_PAR;
+
+    node_t* head = NULL;
+    node_t* cur;
+
+    while (true) {
+        token_t* t = get_front_token(ctx);
+        if (t->type == TK_R_PAR) {
+            get_next_token(ctx);
+            break;
+        }
+
+        node_t* context = parse_node_in_par(ctx);
+        assert(context->type != NODE_EOF);
+
+        if (!head) {
+            head = context;
+            cur = context;
+        }
+        else {
+            cur->next = context;
+            cur = cur->next;
+        }
+    }
+
+    par->contents = head;
+
+    return (node_t*)par;
+}
+
+static node_t* parse_func_def(context_t* ctx,
+                              token_ctype_t* type,
+                              token_id_t* id)
+{
+    token_t* t = get_next_token(ctx);
+    assert(t->type == TK_L_R_PAR);
+
+    node_func_t* node = calloc(1, sizeof(node_func_t));
+    node->base.type = NODE_DEF_FUNC;
+    node->ret_type = type->type;
+    node->id = id->id;
+
+    node_def_val_t* args = NULL;
+
+    while (true) {
+        t = get_front_token(ctx);
+        if (t->type == TK_R_R_PAR) {
+            get_next_token(ctx);
+            node->args = args;
+            break;
+        }
+
+        NOT_YET_IMPLEMETED;
+    }
+
+    node_t* proc = parse_parenthes(ctx);
+    node->proc = proc;
+
+    return (node_t*)node;
+}
 
 static node_t* parse_single_node(context_t* ctx)
 {
@@ -129,8 +212,7 @@ static node_t* parse_root(context_t* ctx)
             t = get_front_token(ctx);
             // function definition
             if (t->type == TK_L_R_PAR) {
-                NOT_YET_IMPLEMETED;
-                // return parse_func_def(ctx, ctype, id);
+                return parse_func_def(ctx, ctype, id);
             }
             // variable definition
             else {
@@ -149,4 +231,3 @@ node_t* parse(context_t* ctx)
 {
     return parse_root(ctx);
 }
-
