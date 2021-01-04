@@ -28,7 +28,6 @@ static token_number_t num_2_token = {
     .uint64 = 2,
 };
 
-
 LEXER_TEST(null)
 {
     PREPARE_CTX("");

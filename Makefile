@@ -2,7 +2,7 @@ SB	:= #scan-build
 CC	:= $(SB) clang
 CFLAGS	:= -Wall -g3
 
-module	:= context.c lexer.c parser.c
+module	:= context.c lexer.c parser.c node.c
 headers := context.h lexer.h parser.h token.h node.h
 src	:= main.c $(module)
 obj	:= $(src:.c=.o)
