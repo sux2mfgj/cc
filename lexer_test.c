@@ -28,8 +28,6 @@ static token_number_t num_2_token = {
     .uint64 = 2,
 };
 
-#define LEXER_TEST(name) Ensure(lexer_##name)
-#define LEXER_ADDTEST(name) add_test(suite, lexer_##name)
 
 LEXER_TEST(null)
 {

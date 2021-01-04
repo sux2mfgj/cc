@@ -14,7 +14,7 @@ $(bin): $(obj) $(headers)
 clean:
 	rm -rf $(obj) $(bin) *.s a.out test.bin *.o
 
-test.bin: test.c $(module) lexer_test.c
+test.bin: test.c $(module) lexer_test.c parser_test.c
 	$(CC) $(CFLAGS) $^ -lcgreen -o $@
 
 test: test.bin

@@ -44,4 +44,11 @@ static token_opr_t div_op = {
     write(fds[1], text, sizeof text);      \
     close(fds[1]);
 
+#define LEXER_TEST(name) Ensure(lexer_##name)
+#define LEXER_ADDTEST(name) add_test(suite, lexer_##name)
+
+#define PARSER_TEST(name) Ensure(parser_##name)
+#define PARSER_ADDTEST(name) add_test(suite, parser_##name)
+
 TestSuite* lexer_tests(void);
+TestSuite* parser_tests(void);
