@@ -11,6 +11,7 @@ typedef enum {
     NODE_OP,
     NODE_PAR,
     NODE_ASSIGN,
+    NODE_INCLUDE,
 } node_type_t;
 
 typedef struct _node_t {
@@ -56,5 +57,10 @@ typedef struct {
     char* id;  // it should be node_t*
     node_t* expr;
 } node_assign_t;
+
+typedef struct {
+    node_t base;
+    char* filename;
+} node_include_t;
 
 node_t* generate_simple_node(node_type_t type);

@@ -237,6 +237,18 @@ PARSER_TEST(def_func_2)
     // TODO
 }
 
+PARSER_TEST(include_0)
+{
+    PREPARE_CTX("#include <stdio.h>");
+
+    node_t* n = parse(ctx);
+
+    assert_that(n->type, is_equal_to(NODE_INCLUDE));
+    node_include_t* inc = (node_include_t*)n;
+    assert_that(inc->filename,
+                is_equal_to_contents_of("stdio.h", sizeof "stdio.h"));
+}
+
 TestSuite* parser_tests(void)
 {
     TestSuite* suite = create_test_suite();
@@ -251,6 +263,7 @@ TestSuite* parser_tests(void)
     PARSER_ADDTEST(def_func_0);
     PARSER_ADDTEST(def_func_1);
     PARSER_ADDTEST(def_func_2);
+    PARSER_ADDTEST(include_0);
 
     return suite;
 }

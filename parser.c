@@ -260,6 +260,36 @@ static node_t* parse_root(context_t* ctx)
             }
             break;
         }
+        case TK_SHARP: {
+            t = get_next_token(ctx);
+            if (t->type != TK_ID) {
+                NOT_YET_IMPLEMETED;
+            }
+
+            token_id_t* id = (token_id_t*)t;
+            t = get_next_token(ctx);
+            if (t->type != TK_OPR && ((token_opr_t*)t)->type != OP_LT) {
+                NOT_YET_IMPLEMETED;
+            }
+
+            t = get_next_token(ctx);
+            if (t->type != TK_ID) {
+                NOT_YET_IMPLEMETED;
+            }
+            id = (token_id_t*)t;
+
+            t = get_next_token(ctx);
+            if (t->type != TK_OPR && ((token_opr_t*)t)->type != OP_GT) {
+                NOT_YET_IMPLEMETED;
+            }
+
+            node_include_t* inc = calloc(1, sizeof(node_include_t));
+            inc->base.type = NODE_INCLUDE;
+            inc->filename = id->id;
+
+            result = (node_t*)inc;
+            break;
+        }
         default:
             errx(EXIT_FAILURE, "invalid token found: %d", __LINE__);
     }
