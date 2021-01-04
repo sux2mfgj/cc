@@ -16,7 +16,7 @@ static node_t* parse_var_def(context_t* ctx,
     token_t* t = get_next_token(ctx);
 
     node_def_val_t* node = calloc(1, sizeof(node_def_val_t));
-    node->base.type = NODE_DEF_VAL;
+    node->base.type = NODE_DEF_VAR;
     node->type = type->type;
     node->id = id->id;
 
