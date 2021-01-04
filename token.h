@@ -3,6 +3,7 @@
 #include <stdint.h>
 
 typedef enum {
+    TK_INV,      //
     TK_OPR,      // +, -, *, /, ==, !=, +=,
     TK_NUM,      // 1 ~ 9
     TK_SEM,      // ;

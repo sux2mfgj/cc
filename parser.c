@@ -36,7 +36,33 @@ static node_t* parse_var_def(context_t* ctx,
         return (node_t*)node;
     }
     else {
-        errx(EXIT_FAILURE, "invalid input");
+        errx(EXIT_FAILURE, "invalid token found: %d", __LINE__);
+    }
+}
+
+static node_t* parse_id(context_t* ctx)
+{
+    token_t* t = get_next_token(ctx);
+    assert(t->type == TK_ID);
+
+    token_id_t* id = (token_id_t*)t;
+    t = get_front_token(ctx);
+
+    switch (t->type) {
+        case TK_ASSIGN: {
+            get_next_token(ctx);
+            node_assign_t* n = calloc(1, sizeof(node_assign_t));
+            n->base.type = NODE_ASSIGN;
+            n->id = id->id;
+            n->expr = parse_expr(ctx);
+            skip_semicolon(ctx);
+            return (node_t*)n;
+        }
+        case TK_SEM:      // just write id?
+        case TK_L_R_PAR:  // function call
+            NOT_YET_IMPLEMETED;
+        default:
+            errx(EXIT_FAILURE, "invalid token found: %d", __LINE__);
     }
 }
 
@@ -54,13 +80,16 @@ static node_t* parse_node_in_par(context_t* ctx)
 
             return parse_var_def(ctx, ctype, id);
         }
-        case TK_ID:
+        case TK_ID: {
+            return parse_id(ctx);
+        }
         case TK_NUM:
         case TK_RET:
         case TK_L_R_PAR:
             NOT_YET_IMPLEMETED;
         default:
-            errx(EXIT_FAILURE, "invalid token found: %d", __LINE__);
+            errx(EXIT_FAILURE, "invalid token found (%d): %d", t->type,
+                 __LINE__);
     }
 
     NOT_YET_IMPLEMETED;

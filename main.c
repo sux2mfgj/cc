@@ -25,7 +25,7 @@ int main(int argc, char** argv)
             node = node->next;
         }
 
-        if (node->type == NODE_EOF) {
+        if (tmp->type == NODE_EOF) {
             break;
         }
     }
