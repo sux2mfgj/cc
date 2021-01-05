@@ -121,6 +121,101 @@ static token_t* parse_id(context_t* ctx)
     return (token_t*)t;
 }
 
+static token_t* _next_token(context_t* ctx);
+
+typedef struct _tnode_t {
+    struct _tnode_t* next;
+    token_t* token;
+} tnode_t;
+
+static tnode_t* tnode_head = NULL;
+
+static void push_tnode(token_t* token)
+{
+    tnode_t* tnode = calloc(1, sizeof(tnode_t));
+    tnode->next = NULL;
+    tnode->token = token;
+    if (!tnode_head) {
+        tnode_head = tnode;
+        return;
+    }
+
+    tnode_t* cur = tnode_head;
+    while (cur->next) {
+        cur = cur->next;
+    }
+    cur->next = tnode;
+}
+
+static token_t* pop_tnode(context_t* ctx)
+{
+    if (!tnode_head) {
+        return _next_token(ctx);
+    }
+
+    tnode_t* ret = tnode_head;
+    tnode_head = tnode_head->next;
+
+    token_t* token = ret->token;
+    free(ret);
+
+    return token;
+}
+
+static void parse_include(context_t* ctx)
+{
+    while (is_skip_char(*ctx->buffer)) {
+        ctx->buffer++;
+    }
+
+    token_t* inc = parse_id(ctx);
+    assert(inc);
+    push_tnode(inc);
+
+    while (is_skip_char(*ctx->buffer)) {
+        ctx->buffer++;
+    }
+
+    if (*ctx->buffer == '<') {
+        ctx->buffer++;
+        token_opr_t* t = calloc(1, sizeof(token_opr_t));
+        t->base.type = TK_OPR;
+        t->type = OP_LT;
+
+        push_tnode((token_t*)t);
+    }
+    else {
+        printf("parse_include: %c\n", *ctx->buffer);
+        NOT_YET_IMPLEMETED;
+    }
+
+    char* start = ctx->buffer;
+    int len = 0;
+    while (*ctx->buffer != '>') {
+        ctx->buffer++;
+        len++;
+    }
+
+    token_id_t* tid = calloc(1, sizeof(token_id_t));
+    tid->base.type = TK_ID;
+    tid->id = calloc(len + 1, sizeof(char));
+    memcpy(tid->id, start, len);
+
+    push_tnode((token_t*)tid);
+
+    if (*ctx->buffer == '>') {
+        ctx->buffer++;
+        token_opr_t* t = calloc(1, sizeof(token_opr_t));
+        t->base.type = TK_OPR;
+        t->type = OP_GT;
+
+        push_tnode((token_t*)t);
+    }
+    else {
+        NOT_YET_IMPLEMETED;
+    }
+}
+
 static token_t* _next_token(context_t* ctx)
 {
     token_t* t;
@@ -326,6 +421,7 @@ static token_t* _next_token(context_t* ctx)
             ctx->buffer++;
             t = calloc(1, sizeof(token_t));
             t->type = TK_SHARP;
+            parse_include(ctx);
             goto found;
         }
     }
@@ -349,13 +445,13 @@ token_t* get_next_token(context_t* ctx)
         return ret;
     }
 
-    return _next_token(ctx);
+    return pop_tnode(ctx);
 }
 
 token_t* get_front_token(context_t* ctx)
 {
     if (!front) {
-        front = _next_token(ctx);
+        front = pop_tnode(ctx);
     }
 
     return front;
