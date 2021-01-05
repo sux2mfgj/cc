@@ -176,13 +176,33 @@ static void parse_include(context_t* ctx)
         ctx->buffer++;
     }
 
+    char end;
+    token_t* close_token;
+
     if (*ctx->buffer == '<') {
         ctx->buffer++;
         token_opr_t* t = calloc(1, sizeof(token_opr_t));
         t->base.type = TK_OPR;
         t->type = OP_LT;
 
+        end = '>';
+
+        token_opr_t* t2 = calloc(1, sizeof(token_opr_t));
+        t2->base.type = TK_OPR;
+        t2->type = OP_GT;
+        close_token = (token_t*)t2;
+
         push_tnode((token_t*)t);
+    }
+    else if (*ctx->buffer == '\"') {
+        ctx->buffer++;
+        token_t* t = calloc(1, sizeof(token_t));
+        t->type = TK_DQUOTE;
+        end = '\"';
+
+        close_token = calloc(1, sizeof(token_t));
+        close_token->type = TK_DQUOTE;
+        push_tnode(t);
     }
     else {
         printf("parse_include: %c\n", *ctx->buffer);
@@ -191,7 +211,7 @@ static void parse_include(context_t* ctx)
 
     char* start = ctx->buffer;
     int len = 0;
-    while (*ctx->buffer != '>') {
+    while (*ctx->buffer != end) {
         ctx->buffer++;
         len++;
     }
@@ -203,13 +223,9 @@ static void parse_include(context_t* ctx)
 
     push_tnode((token_t*)tid);
 
-    if (*ctx->buffer == '>') {
+    if (*ctx->buffer == end) {
         ctx->buffer++;
-        token_opr_t* t = calloc(1, sizeof(token_opr_t));
-        t->base.type = TK_OPR;
-        t->type = OP_GT;
-
-        push_tnode((token_t*)t);
+        push_tnode(close_token);
     }
     else {
         NOT_YET_IMPLEMETED;

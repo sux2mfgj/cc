@@ -280,6 +280,26 @@ LEXER_TEST(macro_0)
     assert_that(opr->type, is_equal_to(OP_GT));
 }
 
+LEXER_TEST(macro_1)
+{
+    PREPARE_CTX("#include \"stdio.h\"");
+
+    token_t* t = get_next_token(ctx);
+    assert_that(t->type, is_equal_to(TK_SHARP));
+
+    t = get_next_token(ctx);
+    assert_that(t->type, is_equal_to(TK_ID));
+
+    t = get_next_token(ctx);
+    assert_that(t->type, is_equal_to(TK_DQUOTE));
+
+    t = get_next_token(ctx);
+    assert_that(t->type, is_equal_to(TK_ID));
+
+    t = get_next_token(ctx);
+    assert_that(t->type, is_equal_to(TK_DQUOTE));
+}
+
 TestSuite* lexer_tests()
 {
     TestSuite* suite = create_test_suite();
@@ -300,6 +320,7 @@ TestSuite* lexer_tests()
     LEXER_ADDTEST(round_par_1);
 
     LEXER_ADDTEST(macro_0);
+    LEXER_ADDTEST(macro_1);
 
     return suite;
 }

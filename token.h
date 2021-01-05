@@ -18,6 +18,7 @@ typedef enum {
     TK_TYPE,   // uint64_t, void
     TK_RET,    // return
     TK_SHARP,  // #
+    TK_DQUOTE, // "
 } token_type_t;
 
 typedef struct _token_base {
