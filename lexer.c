@@ -40,6 +40,7 @@ static token_t* parse_value(context_t* ctx)
     token_number_t* t = calloc(1, sizeof(token_number_t));
     t->base.type = TK_NUM;
     t->uint64 = value;
+    t->line = ctx->line_number;
 
     return (token_t*)t;
 }
@@ -55,6 +56,7 @@ static token_t* try_to_parse_reserved(context_t* ctx)
         token_ctype_t* t = calloc(1, sizeof(token_ctype_t));
         t->base.type = TK_TYPE;
         t->type = TYPE_UINT64;
+        t->line = ctx->line_number;
 
         ctx->buffer += strlen("uint64_t");
 
@@ -65,6 +67,7 @@ static token_t* try_to_parse_reserved(context_t* ctx)
         token_ctype_t* t = calloc(1, sizeof(token_ctype_t));
         t->base.type = TK_TYPE;
         t->type = TYPE_VOID;
+        t->line = ctx->line_number;
 
         ctx->buffer += strlen("void");
 
@@ -74,6 +77,7 @@ static token_t* try_to_parse_reserved(context_t* ctx)
     if (check_str_without_terminator(ctx->buffer, "return")) {
         token_t* t = calloc(1, sizeof(token_t));
         t->type = TK_RET;
+        t->line = ctx->line_number;
 
         ctx->buffer += strlen("return");
 
@@ -116,6 +120,7 @@ static token_t* parse_id(context_t* ctx)
     token_id_t* t = calloc(1, sizeof(token_id_t));
     t->base.type = TK_ID;
     t->id = calloc(len + 1, sizeof(char));
+    t->line = ctx->line_number;
     memcpy(t->id, start, len);
 
     return (token_t*)t;
@@ -170,6 +175,7 @@ static void parse_include(context_t* ctx)
     }
 
     token_t* inc = parse_id(ctx);
+    t->line = ctx->line_number;
     assert(inc);
     push_tnode(inc);
 
@@ -185,12 +191,14 @@ static void parse_include(context_t* ctx)
         token_opr_t* t = calloc(1, sizeof(token_opr_t));
         t->base.type = TK_OPR;
         t->type = OP_LT;
+        t->line = ctx->line_number;
 
         end = '>';
 
         token_opr_t* t2 = calloc(1, sizeof(token_opr_t));
         t2->base.type = TK_OPR;
         t2->type = OP_GT;
+        t2->line = ctx->line_number;
         close_token = (token_t*)t2;
 
         push_tnode((token_t*)t);
@@ -199,10 +207,12 @@ static void parse_include(context_t* ctx)
         ctx->buffer++;
         token_t* t = calloc(1, sizeof(token_t));
         t->type = TK_DQUOTE;
+        t->line = ctx->line_number;
         end = '\"';
 
         close_token = calloc(1, sizeof(token_t));
         close_token->type = TK_DQUOTE;
+        close_token->line = ctx->line_number;
         push_tnode(t);
     }
     else {
@@ -220,6 +230,7 @@ static void parse_include(context_t* ctx)
     token_id_t* tid = calloc(1, sizeof(token_id_t));
     tid->base.type = TK_ID;
     tid->id = calloc(len + 1, sizeof(char));
+    tid->line = ctx->line_number;
     memcpy(tid->id, start, len);
 
     push_tnode((token_t*)tid);
@@ -274,6 +285,7 @@ static token_t* _next_token(context_t* ctx)
                 ctx->buffer++;
                 ((token_opr_t*)t)->base.type = TK_OPR;
                 ((token_opr_t*)t)->type = OP_EQ;
+                t->line = ctx->line_number;
                 goto found;
             }
             else {
@@ -289,12 +301,14 @@ static token_t* _next_token(context_t* ctx)
                 ctx->buffer++;
                 ((token_opr_t*)t)->base.type = TK_OPR;
                 ((token_opr_t*)t)->type = OP_NEQ;
+                t->line = ctx->line_number;
                 goto found;
             }
             else {
                 t = calloc(1, sizeof(token_unary_t));
                 ((token_unary_t*)t)->base.type = TK_UNARY;
                 ((token_unary_t*)t)->type = UNARY_NOT;
+                t->line = ctx->line_number;
                 goto found;
             }
         }
@@ -305,12 +319,14 @@ static token_t* _next_token(context_t* ctx)
                 ctx->buffer++;
                 ((token_opr_t*)t)->base.type = TK_OPR;
                 ((token_opr_t*)t)->type = OP_ADDEQ;
+                t->line = ctx->line_number;
                 goto found;
             }
             else if (*ctx->buffer == '+') {
                 t = calloc(1, sizeof(token_unary_t));
                 ((token_unary_t*)t)->base.type = TK_UNARY;
                 ((token_unary_t*)t)->type = UNARY_INC;
+                t->line = ctx->line_number;
                 ctx->buffer++;
                 goto found;
             }
@@ -318,6 +334,7 @@ static token_t* _next_token(context_t* ctx)
                 t = calloc(1, sizeof(operator_type_t));
                 ((token_opr_t*)t)->base.type = TK_OPR;
                 ((token_opr_t*)t)->type = OP_PLUS;
+                t->line = ctx->line_number;
                 goto found;
             }
         }
@@ -328,12 +345,14 @@ static token_t* _next_token(context_t* ctx)
                 ctx->buffer++;
                 ((token_opr_t*)t)->base.type = TK_OPR;
                 ((token_opr_t*)t)->type = OP_MINEQ;
+                t->line = ctx->line_number;
                 goto found;
             }
             else if (*ctx->buffer == '-') {
                 t = calloc(1, sizeof(token_unary_t));
                 ((token_unary_t*)t)->base.type = TK_UNARY;
                 ((token_unary_t*)t)->type = UNARY_DEC;
+                t->line = ctx->line_number;
                 ctx->buffer++;
                 goto found;
             }
@@ -341,6 +360,7 @@ static token_t* _next_token(context_t* ctx)
                 t = calloc(1, sizeof(token_opr_t));
                 ((token_opr_t*)t)->base.type = TK_OPR;
                 ((token_opr_t*)t)->type = OP_MINUS;
+                t->line = ctx->line_number;
                 goto found;
             }
         }
@@ -351,11 +371,13 @@ static token_t* _next_token(context_t* ctx)
                 ctx->buffer++;
                 ((token_opr_t*)t)->base.type = TK_OPR;
                 ((token_opr_t*)t)->type = OP_MULEQ;
+                t->line = ctx->line_number;
                 goto found;
             }
             else {
                 ((token_opr_t*)t)->base.type = TK_OPR;
                 ((token_opr_t*)t)->type = OP_MUL;
+                t->line = ctx->line_number;
                 goto found;
             }
         }
@@ -366,11 +388,13 @@ static token_t* _next_token(context_t* ctx)
                 ctx->buffer++;
                 ((token_opr_t*)t)->base.type = TK_OPR;
                 ((token_opr_t*)t)->type = OP_DIVEQ;
+                t->line = ctx->line_number;
                 goto found;
             }
             else {
                 ((token_opr_t*)t)->base.type = TK_OPR;
                 ((token_opr_t*)t)->type = OP_DIV;
+                t->line = ctx->line_number;
                 goto found;
             }
         }
@@ -381,11 +405,13 @@ static token_t* _next_token(context_t* ctx)
                 ctx->buffer++;
                 ((token_opr_t*)t)->base.type = TK_OPR;
                 ((token_opr_t*)t)->type = OP_LTEQ;
+                t->line = ctx->line_number;
                 goto found;
             }
             else {
                 ((token_opr_t*)t)->base.type = TK_OPR;
                 ((token_opr_t*)t)->type = OP_LT;
+                t->line = ctx->line_number;
                 goto found;
             }
         }
@@ -396,11 +422,13 @@ static token_t* _next_token(context_t* ctx)
                 ctx->buffer++;
                 ((token_opr_t*)t)->base.type = TK_OPR;
                 ((token_opr_t*)t)->type = OP_GTEQ;
+                t->line = ctx->line_number;
                 goto found;
             }
             else {
                 ((token_opr_t*)t)->base.type = TK_OPR;
                 ((token_opr_t*)t)->type = OP_GT;
+                t->line = ctx->line_number;
                 goto found;
             }
         }
@@ -408,36 +436,42 @@ static token_t* _next_token(context_t* ctx)
             ctx->buffer++;
             t = calloc(1, sizeof(token_t));
             t->type = TK_SEM;
+            t->line = ctx->line_number;
             goto found;
         }
         case '{': {
             ctx->buffer++;
             t = calloc(1, sizeof(token_t));
             t->type = TK_L_PAR;
+            t->line = ctx->line_number;
             goto found;
         }
         case '}': {
             ctx->buffer++;
             t = calloc(1, sizeof(token_t));
             t->type = TK_R_PAR;
+            t->line = ctx->line_number;
             goto found;
         }
         case '(': {
             ctx->buffer++;
             t = calloc(1, sizeof(token_t));
             t->type = TK_L_R_PAR;
+            t->line = ctx->line_number;
             goto found;
         }
         case ')': {
             ctx->buffer++;
             t = calloc(1, sizeof(token_t));
             t->type = TK_R_R_PAR;
+            t->line = ctx->line_number;
             goto found;
         }
         case '#': {
             ctx->buffer++;
             t = calloc(1, sizeof(token_t));
             t->type = TK_SHARP;
+            t->line = ctx->line_number;
             parse_include(ctx);
             goto found;
         }

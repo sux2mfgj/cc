@@ -49,6 +49,7 @@ context_t* init_context(int fd)
     ctx.buffer = calloc(BUF_SIZE, sizeof(char));
     ctx._buffer = calloc(BUF_SIZE, sizeof(char));
     ctx.buf_index = 0;
+    ctx.line_number = 1;
 
     return &ctx;
 }

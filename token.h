@@ -23,8 +23,7 @@ typedef enum {
 
 typedef struct _token_base {
     token_type_t type;
-    // TODO consider the word, maybe it is not needed.
-    char* word;
+    uint64_t line;
 } token_t;
 
 typedef struct {
