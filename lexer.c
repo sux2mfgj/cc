@@ -164,6 +164,7 @@ static token_t* pop_tnode(context_t* ctx)
 
 static void parse_include(context_t* ctx)
 {
+    printf("parse_include 1: %s\n", ctx->buffer);
     while (is_skip_char(*ctx->buffer)) {
         ctx->buffer++;
     }
@@ -205,7 +206,7 @@ static void parse_include(context_t* ctx)
         push_tnode(t);
     }
     else {
-        printf("parse_include: %c\n", *ctx->buffer);
+        printf("parse_include: %s\n", ctx->buffer);
         NOT_YET_IMPLEMETED;
     }
 
