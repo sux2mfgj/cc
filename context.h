@@ -6,7 +6,8 @@ typedef struct _context_t {
     bool (*read_line)(struct _context_t* ctx);
     char* buffer;
     char* _buffer;
-    int buf_index;
+    char* _buf_base;
+    bool reach_to_end;
     uint64_t line_number;
 } context_t;
 

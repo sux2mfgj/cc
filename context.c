@@ -9,37 +9,34 @@ static int read_fd;
 #define READ_SIZE 80
 #define BUF_SIZE (READ_SIZE + 1)
 
-static bool read_from_fd(context_t* ctx)
+static bool read_line_from_fd(context_t* ctx)
 {
-    ssize_t size = read(read_fd, ctx->_buffer, READ_SIZE);
+    char *start = ctx->_buffer;
 
-    if (size < 0) {
-        warn("failed the read");
-        return false;
-    }
-
-    if (size == 0) {
-        return false;
-    }
-
-    if (size < READ_SIZE) {
-        memcpy(ctx->buffer, ctx->_buffer, size);
-    }
-    else {
-        for (int i = 0; i < READ_SIZE; ++i)
+    while(true)
+    {
+        if(ctx->_buffer == '\n')
         {
-            ctx->buffer[i] = ctx->_buffer[buf_index + i];
-            if(*ctx->_buffer == '\n')
-            {
-                ctx->buffer[i] = '\0';
-                buf_index += i;
-                break;
-            }
+            break;
+        }
+
+        ctx->_buffer++;
+    }
+    ctx->_buffer = '\0';
+    ctx->_buffer++;
+
+    size_t len = ctx->_buffer - start;
+    memcopy(ctx->buffer, start, ctx->_buffer - start);
+
+    memcopy(start, ctx->_buffer, READ_SIZE - len);
+    if(!ctx->reach_to_end)
+    {
+        ssize_t size = read(read_fd, ctx->_buffer, len);
+        if(size < len)
+        {
+            ctx->reach_to_end = true;
         }
     }
-
-    ctx->buffer[size] = '\0';
-    return true;
 }
 
 context_t* init_context(int fd)
@@ -48,7 +45,8 @@ context_t* init_context(int fd)
     ctx.read_line = read_from_fd;
     ctx.buffer = calloc(BUF_SIZE, sizeof(char));
     ctx._buffer = calloc(BUF_SIZE, sizeof(char));
-    ctx.buf_index = 0;
+    ctx._buf_base = ctx._buffer;
+    ctx.reach_to_end = false;
     ctx.line_number = 1;
 
     return &ctx;
