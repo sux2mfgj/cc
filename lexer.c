@@ -39,8 +39,8 @@ static token_t* parse_value(context_t* ctx)
 
     token_number_t* t = calloc(1, sizeof(token_number_t));
     t->base.type = TK_NUM;
+    t->base.line = ctx->line_number;
     t->uint64 = value;
-    t->line = ctx->line_number;
 
     return (token_t*)t;
 }
@@ -55,8 +55,8 @@ static token_t* try_to_parse_reserved(context_t* ctx)
     if (check_str_without_terminator(ctx->buffer, "uint64_t")) {
         token_ctype_t* t = calloc(1, sizeof(token_ctype_t));
         t->base.type = TK_TYPE;
+        t->base.line = ctx->line_number;
         t->type = TYPE_UINT64;
-        t->line = ctx->line_number;
 
         ctx->buffer += strlen("uint64_t");
 
@@ -66,8 +66,8 @@ static token_t* try_to_parse_reserved(context_t* ctx)
     if (check_str_without_terminator(ctx->buffer, "void")) {
         token_ctype_t* t = calloc(1, sizeof(token_ctype_t));
         t->base.type = TK_TYPE;
+        t->base.line = ctx->line_number;
         t->type = TYPE_VOID;
-        t->line = ctx->line_number;
 
         ctx->buffer += strlen("void");
 
@@ -119,8 +119,8 @@ static token_t* parse_id(context_t* ctx)
 
     token_id_t* t = calloc(1, sizeof(token_id_t));
     t->base.type = TK_ID;
+    t->base.line = ctx->line_number;
     t->id = calloc(len + 1, sizeof(char));
-    t->line = ctx->line_number;
     memcpy(t->id, start, len);
 
     return (token_t*)t;
@@ -169,13 +169,12 @@ static token_t* pop_tnode(context_t* ctx)
 
 static void parse_include(context_t* ctx)
 {
-    printf("parse_include 1: %s\n", ctx->buffer);
     while (is_skip_char(*ctx->buffer)) {
         ctx->buffer++;
     }
 
     token_t* inc = parse_id(ctx);
-    t->line = ctx->line_number;
+    inc->line = ctx->line_number;
     assert(inc);
     push_tnode(inc);
 
@@ -190,15 +189,15 @@ static void parse_include(context_t* ctx)
         ctx->buffer++;
         token_opr_t* t = calloc(1, sizeof(token_opr_t));
         t->base.type = TK_OPR;
+        t->base.line = ctx->line_number;
         t->type = OP_LT;
-        t->line = ctx->line_number;
 
         end = '>';
 
         token_opr_t* t2 = calloc(1, sizeof(token_opr_t));
         t2->base.type = TK_OPR;
+        t2->base.line = ctx->line_number;
         t2->type = OP_GT;
-        t2->line = ctx->line_number;
         close_token = (token_t*)t2;
 
         push_tnode((token_t*)t);
@@ -216,7 +215,6 @@ static void parse_include(context_t* ctx)
         push_tnode(t);
     }
     else {
-        printf("parse_include: %s\n", ctx->buffer);
         NOT_YET_IMPLEMETED;
     }
 
@@ -229,8 +227,8 @@ static void parse_include(context_t* ctx)
 
     token_id_t* tid = calloc(1, sizeof(token_id_t));
     tid->base.type = TK_ID;
+    tid->base.line = ctx->line_number;
     tid->id = calloc(len + 1, sizeof(char));
-    tid->line = ctx->line_number;
     memcpy(tid->id, start, len);
 
     push_tnode((token_t*)tid);
@@ -244,8 +242,14 @@ static void parse_include(context_t* ctx)
     }
 }
 
+static token_t* eof_token = NULL;
+
 static token_t* _next_token(context_t* ctx)
 {
+    if (eof_token) {
+        return eof_token;
+    }
+
     token_t* t;
 
     bool done = false;
@@ -261,6 +265,7 @@ static token_t* _next_token(context_t* ctx)
             if (!ctx->read_line(ctx)) {
                 t = calloc(1, sizeof *t);
                 t->type = TK_EOF;
+                eof_token = t;
                 goto found;
             }
             done = false;

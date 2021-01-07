@@ -1,33 +1,6 @@
 #include "lexer.h"
 #include "test.h"
 
-static token_t eof_token = {
-    .type = TK_EOF,
-};
-static token_t sem_token = {
-    .type = TK_SEM,
-};
-static token_t l_t = {
-    .type = TK_L_PAR,
-};
-static token_t r_t = {
-    .type = TK_R_PAR,
-};
-static token_number_t num_1_token = {
-    .base =
-        {
-            .type = TK_NUM,
-        },
-    .uint64 = 1,
-};
-static token_number_t num_2_token = {
-    .base =
-        {
-            .type = TK_NUM,
-        },
-    .uint64 = 2,
-};
-
 LEXER_TEST(null)
 {
     PREPARE_CTX("");
@@ -42,32 +15,25 @@ LEXER_TEST(sem_null)
     PREPARE_CTX(";");
     token_t* t = get_next_token(ctx);
     assert_that(t, is_non_null);
-    assert_that(t, is_equal_to_contents_of(&sem_token, sizeof sem_token));
+    assert_that(t->type, is_equal_to(TK_SEM));
     t = get_next_token(ctx);
-    assert_that(t, is_equal_to_contents_of(&eof_token, sizeof eof_token));
+    assert_that(t->type, is_equal_to(TK_EOF));
 }
 
 LEXER_TEST(number_0)
 {
     PREPARE_CTX("12;");
 
-    token_number_t num_12_token = {
-        .base =
-            {
-                .type = TK_NUM,
-            },
-        .uint64 = 12,
-    };
-
     token_t* t = get_next_token(ctx);
     assert_that(t, is_non_null);
-    assert_that(t, is_equal_to_contents_of(&num_12_token, sizeof num_12_token));
+    assert_that(t->type, is_equal_to(TK_NUM));
+    assert_that(((token_number_t*)t)->uint64, is_equal_to(12));
     t = get_next_token(ctx);
     assert_that(t, is_non_null);
-    assert_that(t, is_equal_to_contents_of(&sem_token, sizeof sem_token));
+    assert_that(t->type, is_equal_to(TK_SEM));
     t = get_next_token(ctx);
     assert_that(t, is_non_null);
-    assert_that(t, is_equal_to_contents_of(&eof_token, sizeof eof_token));
+    assert_that(t->type, is_equal_to(TK_EOF));
 }
 
 LEXER_TEST(op_0)
@@ -75,15 +41,23 @@ LEXER_TEST(op_0)
     PREPARE_CTX("1 + 1;");
 
     token_t* t = get_next_token(ctx);
-    assert_that(t, is_equal_to_contents_of(&num_1_token, sizeof num_1_token));
+    assert_that(t->type, is_equal_to(TK_NUM));
+    assert_that(((token_number_t*)t)->uint64, is_equal_to(1));
+
     t = get_next_token(ctx);
-    assert_that(t, is_equal_to_contents_of(&plus_token, sizeof plus_token));
+    assert_that(t->type, is_equal_to(TK_OPR));
+    assert_that(((token_opr_t*)t)->type, is_equal_to(OP_PLUS));
+
     t = get_next_token(ctx);
-    assert_that(t, is_equal_to_contents_of(&num_1_token, sizeof num_1_token));
+    assert_that(t->type, is_equal_to(TK_NUM));
+    assert_that(((token_number_t*)t)->uint64, is_equal_to(1));
+
     t = get_next_token(ctx);
-    assert_that(t, is_equal_to_contents_of(&sem_token, sizeof sem_token));
+    assert_that(t, is_non_null);
+    assert_that(t->type, is_equal_to(TK_SEM));
     t = get_next_token(ctx);
-    assert_that(t, is_equal_to_contents_of(&eof_token, sizeof eof_token));
+    assert_that(t, is_non_null);
+    assert_that(t->type, is_equal_to(TK_EOF));
 }
 
 LEXER_TEST(op_1)
@@ -91,24 +65,33 @@ LEXER_TEST(op_1)
     PREPARE_CTX("1 - 2;");
 
     token_t* t = get_next_token(ctx);
-    assert_that(t, is_equal_to_contents_of(&num_1_token, sizeof num_1_token));
+    assert_that(t->type, is_equal_to(TK_NUM));
+    assert_that(((token_number_t*)t)->uint64, is_equal_to(1));
+
     t = get_next_token(ctx);
-    assert_that(t, is_equal_to_contents_of(&minus_op, sizeof minus_op));
+    assert_that(t->type, is_equal_to(TK_OPR));
+    assert_that(((token_opr_t*)t)->type, is_equal_to(OP_MINUS));
+
     t = get_next_token(ctx);
-    assert_that(t, is_equal_to_contents_of(&num_2_token, sizeof num_2_token));
+    assert_that(t->type, is_equal_to(TK_NUM));
+    assert_that(((token_number_t*)t)->uint64, is_equal_to(2));
+
     t = get_next_token(ctx);
-    assert_that(t, is_equal_to_contents_of(&sem_token, sizeof sem_token));
+    assert_that(t, is_non_null);
+    assert_that(t->type, is_equal_to(TK_SEM));
     t = get_next_token(ctx);
-    assert_that(t, is_equal_to_contents_of(&eof_token, sizeof eof_token));
+    assert_that(t, is_non_null);
+    assert_that(t->type, is_equal_to(TK_EOF));
 }
 
 LEXER_TEST(parentheses_0)
 {
     PREPARE_CTX("{}");
     token_t* t = get_next_token(ctx);
-    assert_that(t, is_equal_to_contents_of(&l_t, sizeof l_t));
+    assert_that(t->type, is_equal_to(TK_L_PAR));
+
     t = get_next_token(ctx);
-    assert_that(t, is_equal_to_contents_of(&r_t, sizeof r_t));
+    assert_that(t->type, is_equal_to(TK_R_PAR));
 }
 
 LEXER_TEST(front_0)
@@ -117,34 +100,25 @@ LEXER_TEST(front_0)
 
     token_t* t;
     t = get_front_token(ctx);
-    assert_that(t, is_equal_to_contents_of(&l_t, sizeof l_t));
-    t = get_next_token(ctx);
-    assert_that(t, is_equal_to_contents_of(&l_t, sizeof l_t));
-
-    token_number_t num_1_token = {
-        .base =
-            {
-                .type = TK_NUM,
-            },
-        .uint64 = 1,
-    };
-
-    token_number_t num_2_token = {
-        .base =
-            {
-                .type = TK_NUM,
-            },
-        .uint64 = 2,
-    };
 
     t = get_next_token(ctx);
-    assert_that(t, is_equal_to_contents_of(&num_1_token, sizeof num_1_token));
+    assert_that(t->type, is_equal_to(TK_L_PAR));
+
     t = get_next_token(ctx);
-    assert_that(t, is_equal_to_contents_of(&plus_token, sizeof plus_token));
+    assert_that(t->type, is_equal_to(TK_NUM));
+    assert_that(((token_number_t*)t)->uint64, is_equal_to(1));
+
+    t = get_next_token(ctx);
+    assert_that(t->type, is_equal_to(TK_OPR));
+    assert_that(((token_opr_t*)t)->type, is_equal_to(OP_PLUS));
+
     t = get_front_token(ctx);
-    assert_that(t, is_equal_to_contents_of(&num_2_token, sizeof num_2_token));
+    assert_that(t->type, is_equal_to(TK_NUM));
+    assert_that(((token_number_t*)t)->uint64, is_equal_to(2));
+
     t = get_next_token(ctx);
-    assert_that(t, is_equal_to_contents_of(&num_2_token, sizeof num_2_token));
+    assert_that(t->type, is_equal_to(TK_NUM));
+    assert_that(((token_number_t*)t)->uint64, is_equal_to(2));
     // TODO
 }
 
@@ -152,16 +126,9 @@ LEXER_TEST(uint64_t_0)
 {
     PREPARE_CTX("uint64_t");
 
-    token_ctype_t t = {
-        .base =
-            {
-                .type = TK_TYPE,
-            },
-        .type = TYPE_UINT64,
-    };
-
-    token_t* tt = get_next_token(ctx);
-    assert_that(tt, is_equal_to_contents_of(&t, sizeof t));
+    token_t* t = get_next_token(ctx);
+    assert_that(t->type, is_equal_to(TK_TYPE));
+    assert_that(((token_ctype_t*)t)->type, is_equal_to(TYPE_UINT64));
 }
 
 LEXER_TEST(uint64_t_1)

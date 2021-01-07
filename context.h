@@ -1,6 +1,7 @@
 #pragma once
 
 #include <stdbool.h>
+#include <stdint.h>
 
 typedef struct _context_t {
     bool (*read_line)(struct _context_t* ctx);
