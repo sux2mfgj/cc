@@ -11,12 +11,10 @@ static int read_fd;
 
 static bool read_line_from_fd(context_t* ctx)
 {
-    char *start = ctx->_buffer;
+    char* start = ctx->_buffer;
 
-    while(true)
-    {
-        if(ctx->_buffer == '\n')
-        {
+    while (true) {
+        if (ctx->_buffer == '\n') {
             break;
         }
 
@@ -29,11 +27,9 @@ static bool read_line_from_fd(context_t* ctx)
     memcopy(ctx->buffer, start, ctx->_buffer - start);
 
     memcopy(start, ctx->_buffer, READ_SIZE - len);
-    if(!ctx->reach_to_end)
-    {
+    if (!ctx->reach_to_end) {
         ssize_t size = read(read_fd, ctx->_buffer, len);
-        if(size < len)
-        {
+        if (size < len) {
             ctx->reach_to_end = true;
         }
     }
