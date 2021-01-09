@@ -194,6 +194,14 @@ LEXER_TEST(if_0)
     assert_that (t->type, is_equal_to(TK_IF));
 }
 
+LEXER_TEST(else_0)
+{
+    PREPARE_CTX("else");
+    token_t *t = get_next_token(ctx);
+    assert_that (t, is_non_null);
+    assert_that (t->type, is_equal_to(TK_ELSE));
+}
+
 LEXER_TEST(void_0)
 {
     PREPARE_CTX("void");
