@@ -186,6 +186,14 @@ LEXER_TEST(return_0)
     assert_that(t->type, is_equal_to(TK_RET));
 }
 
+LEXER_TEST(if_0)
+{
+    PREPARE_CTX("if");
+    token_t *t = get_next_token(ctx);
+    assert_that (t, is_non_null);
+    assert_that (t->type, is_equal_to(TK_IF));
+}
+
 LEXER_TEST(void_0)
 {
     PREPARE_CTX("void");
@@ -285,6 +293,7 @@ TestSuite* lexer_tests()
     LEXER_ADDTEST(void_0);
     LEXER_ADDTEST(round_par_0);
     LEXER_ADDTEST(round_par_1);
+    LEXER_ADDTEST(if_0);
 
     LEXER_ADDTEST(macro_0);
     LEXER_ADDTEST(macro_1);

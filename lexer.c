@@ -63,6 +63,18 @@ static token_t* try_to_parse_reserved(context_t* ctx)
         return (token_t*)t;
     }
 
+    if (check_str_without_terminator(ctx->buffer, "int")) {
+
+        token_ctype_t* t = calloc(1, sizeof(token_ctype_t));
+        t->base.type = TK_TYPE;
+        t->base.line = ctx->line_number;
+        t->type = TYPE_INT;
+
+        ctx->buffer += strlen("int");
+
+        return (token_t*)t;
+    }
+
     if (check_str_without_terminator(ctx->buffer, "void")) {
         token_ctype_t* t = calloc(1, sizeof(token_ctype_t));
         t->base.type = TK_TYPE;
@@ -70,6 +82,26 @@ static token_t* try_to_parse_reserved(context_t* ctx)
         t->type = TYPE_VOID;
 
         ctx->buffer += strlen("void");
+
+        return (token_t*)t;
+    }
+
+    if (check_str_without_terminator(ctx->buffer, "if")) {
+        token_t* t = calloc(1, sizeof(token_t));
+        t->type = TK_IF;
+        t->line = ctx->line_number;
+
+        ctx->buffer += strlen("if");
+
+        return (token_t*)t;
+    }
+
+    if (check_str_without_terminator(ctx->buffer, "else")) {
+        token_t* t = calloc(1, sizeof(token_t));
+        t->type = TK_ELSE;
+        t->line = ctx->line_number;
+
+        ctx->buffer += strlen("else");
 
         return (token_t*)t;
     }
@@ -164,6 +196,7 @@ static token_t* pop_tnode(context_t* ctx)
     token_t* token = ret->token;
     free(ret);
 
+    warn("pop_tnode: %u", token->type);
     return token;
 }
 

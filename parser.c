@@ -291,7 +291,7 @@ static node_t* parse_root(context_t* ctx)
             break;
         }
         default:
-            errx(EXIT_FAILURE, "invalid token found: %d", __LINE__);
+            errx(EXIT_FAILURE, "invalid token found: %u at L%d", t->type, __LINE__);
     }
 
     return result;
