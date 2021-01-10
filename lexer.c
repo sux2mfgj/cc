@@ -196,7 +196,6 @@ static token_t* pop_tnode(context_t* ctx)
     token_t* token = ret->token;
     free(ret);
 
-    warn("pop_tnode: %u", token->type);
     return token;
 }
 
