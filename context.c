@@ -18,7 +18,20 @@ static bool read_line_from_fd(context_t* ctx)
     char* start = ctx->_buffer;
 
     if (*start == '\0') {
-        return false;
+        if (ctx->reach_to_end) {
+            return false;
+        }
+        else {
+            ssize_t size = read(read_fd, ctx->_buffer, READ_SIZE);
+            if (size < READ_SIZE) {
+                ctx->reach_to_end = true;
+            }
+
+            if (size == 0) {
+                ctx->reach_to_end = true;
+                return false;
+            }
+        }
     }
 
     while (true) {
@@ -34,10 +47,13 @@ static bool read_line_from_fd(context_t* ctx)
     *ctx->_buffer = '\0';
     ctx->_buffer++;
 
-    size_t len = ctx->_buffer - start;
-    memcpy(ctx->buffer, start, ctx->_buffer - start);
+    size_t len = strlen(start) + 1;
+    strncpy(ctx->buffer, start, len);
 
-    memcpy(start, ctx->_buffer, READ_SIZE - len);
+    strncpy(start, ctx->_buffer, READ_SIZE - len);
+    ctx->_buffer = start;
+
+    ctx->line_number++;
 
     return true;
 }
@@ -51,11 +67,6 @@ context_t* init_context(int fd)
     ctx._buf_base = ctx._buffer;
     ctx.reach_to_end = false;
     ctx.line_number = 1;
-
-    ssize_t size = read(read_fd, ctx._buffer, READ_SIZE);
-    if (size < READ_SIZE) {
-        ctx.reach_to_end = true;
-    }
 
     return &ctx;
 }
