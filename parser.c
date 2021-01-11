@@ -5,6 +5,7 @@
 #include "lexer.h"
 #include "parser.h"
 #include "util.h"
+#include "token.h"
 
 static node_t* parse_expr(context_t* ctx);
 
@@ -154,6 +155,12 @@ static node_t* parse_func_def(context_t* ctx,
         }
 
         NOT_YET_IMPLEMETED;
+    }
+
+    t = get_front_token(ctx);
+    if(t->type != TK_L_PAR)
+    {
+        errx(EXIT_FAILURE, "invalid token found: %s at %d", token_to_str(t), __LINE__);
     }
 
     node_t* proc = parse_parenthes(ctx);
