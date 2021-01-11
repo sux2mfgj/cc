@@ -15,12 +15,12 @@ typedef enum {
     TK_UNARY,    // !, ++, --
     TK_ID,
     TK_EOF,
-    TK_TYPE,   // uint64_t, void
-    TK_RET,    // return
+    TK_TYPE,  // uint64_t, void
+    TK_RET,   // return
     TK_IF,
     TK_ELSE,
-    TK_SHARP,  // #
-    TK_DQUOTE, // "
+    TK_SHARP,   // #
+    TK_DQUOTE,  // "
 } token_type_t;
 
 typedef struct _token_base {
@@ -80,3 +80,5 @@ typedef struct {
     token_t base;
     unary_opr_t type;
 } token_unary_t;
+
+char* token_to_str(token_t* t);
