@@ -3,7 +3,9 @@
 #include <errno.h>
 #include <stdint.h>
 #include <stdio.h>
+
 #include "context.h"
+#include "ir.h"
 #include "lexer.h"
 #include "node.h"
 #include "parser.h"
@@ -29,4 +31,6 @@ int main(int argc, char** argv)
             break;
         }
     }
+
+    gen_ir(node, stdout);
 }
