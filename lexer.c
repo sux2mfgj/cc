@@ -184,7 +184,7 @@ static void push_tnode(token_t* token)
     cur->next = tnode;
 }
 
-static token_t* pop_tnode(context_t* ctx)
+token_t* pop_tnode(context_t* ctx)
 {
     if (!tnode_head) {
         return _next_token(ctx);

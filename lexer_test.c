@@ -309,6 +309,33 @@ LEXER_TEST(func_0)
     assert_that(t->type, is_equal_to(TK_R_PAR));
 }
 
+LEXER_TEST(func_1)
+{
+    PREPARE_CTX(
+        "int main()"
+        "{"
+        "}");
+
+    token_t* pop_tnode(context_t* ctx);
+    token_t* t = pop_tnode(ctx);
+    assert_that(t->type, is_equal_to(TK_TYPE));
+
+    t = pop_tnode(ctx);
+    assert_that(t->type, is_equal_to(TK_ID));
+
+    t = pop_tnode(ctx);
+    assert_that(t->type, is_equal_to(TK_L_R_PAR));
+
+    t = pop_tnode(ctx);
+    assert_that(t->type, is_equal_to(TK_R_R_PAR));
+
+    t = pop_tnode(ctx);
+    assert_that(t->type, is_equal_to(TK_L_PAR));
+
+    t = pop_tnode(ctx);
+    assert_that(t->type, is_equal_to(TK_R_PAR));
+}
+
 TestSuite* lexer_tests()
 {
     TestSuite* suite = create_test_suite();
@@ -332,6 +359,7 @@ TestSuite* lexer_tests()
     LEXER_ADDTEST(macro_0);
     LEXER_ADDTEST(macro_1);
     LEXER_ADDTEST(func_0);
+    LEXER_ADDTEST(func_1);
 
     return suite;
 }
