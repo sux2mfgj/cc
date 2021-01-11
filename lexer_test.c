@@ -189,17 +189,17 @@ LEXER_TEST(return_0)
 LEXER_TEST(if_0)
 {
     PREPARE_CTX("if");
-    token_t *t = get_next_token(ctx);
-    assert_that (t, is_non_null);
-    assert_that (t->type, is_equal_to(TK_IF));
+    token_t* t = get_next_token(ctx);
+    assert_that(t, is_non_null);
+    assert_that(t->type, is_equal_to(TK_IF));
 }
 
 LEXER_TEST(else_0)
 {
     PREPARE_CTX("else");
-    token_t *t = get_next_token(ctx);
-    assert_that (t, is_non_null);
-    assert_that (t->type, is_equal_to(TK_ELSE));
+    token_t* t = get_next_token(ctx);
+    assert_that(t, is_non_null);
+    assert_that(t->type, is_equal_to(TK_ELSE));
 }
 
 LEXER_TEST(void_0)
@@ -283,6 +283,32 @@ LEXER_TEST(macro_1)
     assert_that(t->type, is_equal_to(TK_DQUOTE));
 }
 
+LEXER_TEST(func_0)
+{
+    PREPARE_CTX(
+        "int main()"
+        "{"
+        "}");
+
+    token_t* t = get_next_token(ctx);
+    assert_that(t->type, is_equal_to(TK_TYPE));
+
+    t = get_next_token(ctx);
+    assert_that(t->type, is_equal_to(TK_ID));
+
+    t = get_next_token(ctx);
+    assert_that(t->type, is_equal_to(TK_L_R_PAR));
+
+    t = get_next_token(ctx);
+    assert_that(t->type, is_equal_to(TK_R_R_PAR));
+
+    t = get_next_token(ctx);
+    assert_that(t->type, is_equal_to(TK_L_PAR));
+
+    t = get_next_token(ctx);
+    assert_that(t->type, is_equal_to(TK_R_PAR));
+}
+
 TestSuite* lexer_tests()
 {
     TestSuite* suite = create_test_suite();
@@ -305,6 +331,7 @@ TestSuite* lexer_tests()
 
     LEXER_ADDTEST(macro_0);
     LEXER_ADDTEST(macro_1);
+    LEXER_ADDTEST(func_0);
 
     return suite;
 }
