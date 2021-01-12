@@ -16,7 +16,7 @@ typedef struct {
 
 static ir_t* _gen_ir(node_t* node, FILE* stream)
 {
-    assert(!node);
+    assert(node);
 
     switch (node->type) {
         case NODE_INVALID:
@@ -40,7 +40,7 @@ static ir_t* _gen_ir(node_t* node, FILE* stream)
 
 void gen_ir(node_t* node, FILE* stream)
 {
-    assert(!node);
+    assert(node);
     while(node->type != NODE_EOF)
     {
         ir_t* ir = _gen_ir(node, stream);

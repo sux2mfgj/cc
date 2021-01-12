@@ -32,5 +32,5 @@ int main(int argc, char** argv)
         }
     }
 
-    gen_ir(node, stdout);
+    gen_ir(node_head, stdout);
 }
