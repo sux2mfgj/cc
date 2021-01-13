@@ -1,6 +1,6 @@
+#include <assert.h>
 #include <err.h>
 #include <stdlib.h>
-#include <assert.h>
 
 #include "ir.h"
 #include "util.h"
@@ -14,6 +14,11 @@ typedef struct {
     ir_type_t type;
 } ir_t;
 
+void _gen_ir_func(node_t* node, FILE* stream)
+{
+    NOT_YET_IMPLEMETED;
+}
+
 static ir_t* _gen_ir(node_t* node, FILE* stream)
 {
     assert(node);
@@ -21,14 +26,18 @@ static ir_t* _gen_ir(node_t* node, FILE* stream)
     switch (node->type) {
         case NODE_INVALID:
             err(EXIT_FAILURE, "invalid node found");
-        case NODE_EOF:
-        {
+        case NODE_EOF: {
             ir_t* ir = calloc(1, sizeof(ir_t));
             ir->type = IR_EOF;
             return ir;
         }
         case NODE_DEF_VAR:
-        case NODE_DEF_FUNC:
+            NOT_YET_IMPLEMETED;
+        case NODE_DEF_FUNC: {
+            _gen_ir_func(node, stream);
+            return NULL;
+            break;
+        }
         case NODE_VAL:
         case NODE_OP:
         case NODE_PAR:
@@ -41,11 +50,9 @@ static ir_t* _gen_ir(node_t* node, FILE* stream)
 void gen_ir(node_t* node, FILE* stream)
 {
     assert(node);
-    while(node->type != NODE_EOF)
-    {
+    while (node->type != NODE_EOF) {
         ir_t* ir = _gen_ir(node, stream);
-        if(ir->type == IR_EOF)
-        {
+        if (ir->type == IR_EOF) {
             break;
         }
         node = node->next;
