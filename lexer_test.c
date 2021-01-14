@@ -316,7 +316,7 @@ LEXER_TEST(func_1)
         "{"
         "}");
 
-    token_t* pop_tnode(context_t* ctx);
+    token_t* pop_tnode(context_t * ctx);
     token_t* t = pop_tnode(ctx);
     assert_that(t->type, is_equal_to(TK_TYPE));
 
@@ -334,6 +334,30 @@ LEXER_TEST(func_1)
 
     t = pop_tnode(ctx);
     assert_that(t->type, is_equal_to(TK_R_PAR));
+}
+
+LEXER_TEST(long_0)
+{
+    PREPARE_CTX(
+        "int main()"
+        "{"
+        "   int a;"
+        "   int b;"
+        "   a + b;"
+        "   a + b;"
+        "   a + b;"
+        "   a + b;"
+        "   a + b;"
+        "   a + b;"
+        "}");
+
+    token_t* t;
+    while (true) {
+        t = pop_tnode(ctx);
+        if (t->type == TK_EOF) {
+            break;
+        }
+    }
 }
 
 TestSuite* lexer_tests()
@@ -360,6 +384,7 @@ TestSuite* lexer_tests()
     LEXER_ADDTEST(macro_1);
     LEXER_ADDTEST(func_0);
     LEXER_ADDTEST(func_1);
+    LEXER_ADDTEST(long_0);
 
     return suite;
 }
